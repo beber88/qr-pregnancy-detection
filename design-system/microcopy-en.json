@@ -1,0 +1,127 @@
+{
+  "meta": {
+    "language": "en",
+    "direction": "ltr",
+    "tone": "Warm, direct, gender-neutral. Never patronizing. No exclamation marks on result screens. No emoji."
+  },
+
+  "screens": {
+    "home": {
+      "title": "Hello",
+      "subtitle": "Let's begin. Take your time.",
+      "cta_new": "New test",
+      "cta_history": "History",
+      "cta_settings": "Settings"
+    },
+
+    "guide": {
+      "title": "How to photograph",
+      "step1_title": "Clear cup on white surface",
+      "step1_desc": "Pour a urine sample into a clear cup and place it on a white surface",
+      "step2_title": "Shoot from above, straight down",
+      "step2_desc": "Hold your phone 15-20 cm above the cup, camera pointing straight down",
+      "step3_title": "Natural light, no flash",
+      "step3_desc": "Diffused daylight gives the best result. Do not use flash",
+      "do": "Clear cup\nWhite background\nDaylight",
+      "dont": "Colored cup\nDark background\nFlash",
+      "tip": "Not sure? Retake. No limits.",
+      "cta": "Open camera"
+    },
+
+    "camera": {
+      "label": "Center the\ncup here",
+      "feedback_good": "Looking good. Tap when ready",
+      "feedback_dark": "A little more light needed",
+      "feedback_bright": "Too much light",
+      "feedback_blurry": "Try holding steady",
+      "feedback_misaligned": "Move slightly to center the cup"
+    },
+
+    "questions": {
+      "title": "Two quick questions",
+      "subtitle": "Helps improve accuracy. Optional.",
+      "q1_label": "When was your last period",
+      "q1_options": ["In the past week", "1-2 weeks ago", "2-4 weeks ago", "Over a month ago", "Don't remember"],
+      "q2_label": "When was the sample taken",
+      "q2_options": ["Morning urine (first of the day)", "During the day", "In the evening"],
+      "note_q2": "Morning urine is more concentrated and gives more accurate results",
+      "privacy": "Saved on device only.",
+      "cta_continue": "Continue",
+      "cta_skip": "Skip"
+    },
+
+    "waiting": {
+      "title": "Analyzing the sample",
+      "messages": ["Take a deep breath", "Just a moment", "Checking the sample", "Processing data", "Almost done"],
+      "duration": "Usually 8 to 12 seconds"
+    },
+
+    "result": {
+      "disclaimer": "For research use only. Experimental probability model. Not a substitute for medical testing.",
+      "label": "Probability based on sample analysis",
+      "confidence": "Model confidence",
+      "context_high": "The analysis detects signs in the urine sample that may indicate pregnancy. A medical test will provide a definitive answer.",
+      "context_medium": "The analysis is inconclusive. We recommend retesting in two days.",
+      "context_low": "The analysis does not detect clear signs. This does not rule out pregnancy — timing and sample characteristics matter.",
+      "retest": "The result is borderline.",
+      "retest_when": "We recommend retesting in two days",
+      "retest_why": "As days pass, hormone levels change and the analysis becomes more accurate.",
+      "cta_learn": "What does this mean",
+      "cta_learn_hide": "Hide",
+      "cta_talk": "Talk to someone",
+      "cta_retake": "Retake photo"
+    },
+
+    "medical": {
+      "how_title": "How it works",
+      "how_body": "The system analyzes the appearance of urine — color, turbidity, and hue — using a model trained on millions of samples. Hormonal changes during pregnancy affect visible urine characteristics.",
+      "next_title": "What to do next",
+      "next_steps": [
+        "A blood hCG test is the most reliable confirmation",
+        "Contact your doctor or OB-GYN"
+      ],
+      "urgent_title": "Urgent",
+      "urgent_body": "Sharp abdominal pain, unusual bleeding, or severe dizziness — go to the emergency room."
+    },
+
+    "help": {
+      "title": "Talk to someone",
+      "subtitle": "Free and confidential lines.",
+      "resources": [
+        {"name": "Emergency — MDA", "phone": "101", "note": "24/7"},
+        {"name": "ERAN — Mental health first aid", "phone": "1201", "note": "24/7, confidential"},
+        {"name": "Women's support line", "phone": "*6724", "note": "Hebrew, Arabic, Russian"}
+      ],
+      "footer": "All services are free and confidential."
+    },
+
+    "history": {
+      "title": "History",
+      "empty": "No saved tests",
+      "delete_all": "Delete all",
+      "privacy": "Everything is stored on device only."
+    },
+
+    "settings": {
+      "title": "Settings",
+      "display": "Display",
+      "language": "Language",
+      "dark_mode": "Dark mode",
+      "data": "Data",
+      "auto_delete": "Auto-delete photos",
+      "auto_delete_desc": "Photos are deleted immediately after analysis",
+      "delete_all": "Delete all data",
+      "about": "About"
+    }
+  },
+
+  "global": {
+    "back": "Back",
+    "close": "Close",
+    "loading": "One moment",
+    "disclaimer": "For research use only. Experimental probability model. Not a substitute for medical testing.",
+    "error_generic": "Something went wrong. Please try again.",
+    "error_camera": "Camera access is needed. You can change this in settings.",
+    "error_offline": "No internet connection."
+  }
+}

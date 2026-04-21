@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<title>Nua — Prototype</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Heebo:wght@400;500;600&family=Noto+Serif+Hebrew:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --rose-clay: #C97B63;
+  --cream: #F7EFE5;
+  --deep-plum: #3D2A35;
+  --sage: #A8B5A0;
+  --gold-dust: #D4AF8C;
+  --warm-white: #FDFBF7;
+  --alert: #B8604D;
+  --info: #6B7D8C;
+
+  --font-display: 'Noto Serif Hebrew', 'Fraunces', serif;
+  --font-body: 'Heebo', sans-serif;
+
+  --sp-xs: 4px; --sp-sm: 8px; --sp-md: 16px; --sp-lg: 24px; --sp-xl: 40px;
+  --screen-pad: 20px;
+  --r-sm: 8px; --r-md: 16px; --r-lg: 24px; --r-pill: 999px;
+  --shadow-card: 0 4px 20px rgba(61,42,53,0.08);
+  --shadow-subtle: 0 2px 8px rgba(61,42,53,0.05);
+  --motion-fast: 200ms; --motion-base: 280ms; --motion-slow: 600ms;
+  --ease: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --ease-breathing: cubic-bezier(0.37, 0, 0.63, 1);
+}
+
+[data-theme="dark"] {
+  --cream: #1A1517; --warm-white: #2A2125; --deep-plum: #F7EFE5;
+  --rose-clay: #D4907A; --gold-dust: #C9A882; --sage: #8FA387;
+}
+[lang="en"] { --font-display: 'Fraunces', serif; }
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  font-size: 16px; line-height: 1.5; color: var(--deep-plum);
+  background: #1a1a2e;
+  -webkit-font-smoothing: antialiased;
+  display: flex; justify-content: center; align-items: flex-start;
+  min-height: 100vh; padding: 20px;
+}
+
+.phone-frame {
+  width: 375px; height: 812px;
+  background: var(--cream);
+  border-radius: 44px; overflow: hidden; position: relative;
+  box-shadow: 0 25px 80px rgba(0,0,0,0.4), inset 0 0 0 2px rgba(255,255,255,0.1);
+}
+
+.screen {
+  display: none; flex-direction: column;
+  width: 100%; height: 100%;
+  padding: 54px var(--screen-pad) 34px;
+  overflow-y: auto; overflow-x: hidden;
+  animation: fadeIn var(--motion-base) var(--ease);
+  scrollbar-width: none;
+}
+.screen::-webkit-scrollbar { display: none; }
+.screen.active { display: flex; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.status-bar {
+  position: absolute; top: 0; left: 0; right: 0; height: 48px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  padding: 0 28px 6px; font-size: 14px; font-weight: 600;
+  color: var(--deep-plum); z-index: 100;
+  background: linear-gradient(to bottom, var(--cream) 70%, transparent);
+}
+.status-bar .time { direction: ltr; }
+
+/* Typography */
+h1 { font-family: var(--font-display); font-size: 28px; font-weight: 600; line-height: 1.2; margin-bottom: var(--sp-sm); }
+h2 { font-family: var(--font-display); font-size: 22px; font-weight: 600; line-height: 1.2; margin-bottom: var(--sp-sm); }
+h3 { font-size: 17px; font-weight: 600; line-height: 1.3; }
+.text-sm { font-size: 14px; color: rgba(61,42,53,0.6); }
+[data-theme="dark"] .text-sm { color: #B8A8AE; }
+
+/* Buttons */
+.btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; padding: 16px 24px; border: none; border-radius: var(--r-lg);
+  font-family: var(--font-body); font-size: 16px; font-weight: 500;
+  cursor: pointer; transition: all var(--motion-fast) var(--ease);
+  min-height: 44px; gap: 8px;
+}
+.btn-primary { background: var(--rose-clay); color: white; }
+.btn-primary:hover { filter: brightness(1.05); }
+.btn-primary:active { transform: scale(0.98); }
+.btn-secondary { background: transparent; color: var(--rose-clay); border: 1.5px solid var(--rose-clay); }
+.btn-ghost { background: transparent; color: var(--deep-plum); opacity: 0.7; }
+.btn-ghost:hover { opacity: 1; }
+.btn-danger { background: transparent; color: var(--alert); border: 1.5px solid var(--alert); }
+.btn-small { padding: 10px 20px; font-size: 14px; width: auto; }
+
+/* Chips */
+.chips { display: flex; flex-wrap: wrap; gap: var(--sp-sm); }
+.chip {
+  padding: 10px 18px; border-radius: var(--r-pill);
+  border: 1.5px solid rgba(61,42,53,0.15); background: var(--warm-white);
+  font-size: 14px; font-family: var(--font-body); color: var(--deep-plum);
+  cursor: pointer; transition: all var(--motion-fast) var(--ease);
+  min-height: 44px; display: flex; align-items: center;
+}
+.chip:hover, .chip.selected { background: var(--rose-clay); color: white; border-color: var(--rose-clay); }
+
+/* Options */
+.options { display: flex; flex-direction: column; gap: var(--sp-sm); }
+.opt {
+  padding: 14px var(--sp-md); border-radius: var(--r-md);
+  border: 1.5px solid rgba(61,42,53,0.12); background: var(--warm-white);
+  font-size: 15px; font-family: var(--font-body); color: var(--deep-plum);
+  cursor: pointer; transition: all var(--motion-fast) var(--ease);
+  min-height: 44px; display: flex; align-items: center;
+}
+.opt:hover, .opt.selected { border-color: var(--rose-clay); background: rgba(201,123,99,0.08); }
+
+/* Disclaimer */
+.disclaimer {
+  font-size: 13px; line-height: 1.5; color: rgba(61,42,53,0.7);
+  padding: var(--sp-md); background: rgba(61,42,53,0.04);
+  border-radius: var(--r-sm); text-align: center;
+}
+
+/* Back */
+.back-btn {
+  position: absolute; top: 48px; z-index: 50;
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer; color: var(--deep-plum);
+}
+[dir="rtl"] .back-btn { right: var(--screen-pad); }
+[dir="ltr"] .back-btn { left: var(--screen-pad); }
+.back-btn svg { width: 24px; height: 24px; }
+[dir="ltr"] .back-btn svg { transform: scaleX(-1); }
+
+/* Spacers */
+.sp-sm { height: var(--sp-sm); }
+.sp-md { height: var(--sp-md); }
+.sp-lg { height: var(--sp-lg); }
+.sp-xl { height: var(--sp-xl); }
+
+/* Toggle */
+.toggle {
+  width: 48px; height: 28px; border-radius: 14px;
+  background: rgba(61,42,53,0.15); position: relative;
+  cursor: pointer; transition: background var(--motion-fast); border: none;
+}
+.toggle::after {
+  content: ''; position: absolute; top: 2px;
+  width: 24px; height: 24px; border-radius: 50%; background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  transition: transform var(--motion-fast) var(--ease);
+}
+[dir="rtl"] .toggle::after { right: 2px; }
+[dir="ltr"] .toggle::after { left: 2px; }
+.toggle.on { background: var(--rose-clay); }
+[dir="rtl"] .toggle.on::after { transform: translateX(-20px); }
+[dir="ltr"] .toggle.on::after { transform: translateX(20px); }
+
+/* ========== HOME ========== */
+#screen-home {
+  justify-content: center; align-items: center; text-align: center;
+  gap: var(--sp-lg); padding-top: 100px;
+}
+.logo-mark { width: 80px; height: 80px; }
+.home-title { font-family: var(--font-display); font-size: 36px; font-weight: 500; }
+.home-sub { font-size: 16px; color: rgba(61,42,53,0.6); margin-top: -8px; }
+.home-actions {
+  width: 100%; padding: 0 var(--sp-lg);
+  display: flex; flex-direction: column; gap: var(--sp-md); margin-top: var(--sp-xl);
+}
+
+/* ========== GUIDE ========== */
+.guide-card {
+  background: var(--warm-white); border-radius: var(--r-md);
+  padding: var(--sp-lg); box-shadow: var(--shadow-card);
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; margin-bottom: var(--sp-md);
+}
+.guide-card svg { margin-bottom: var(--sp-md); }
+.guide-card h3 { margin-bottom: var(--sp-xs); font-size: 16px; }
+.guide-card p { font-size: 14px; color: rgba(61,42,53,0.6); }
+
+.guide-do-dont {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-sm);
+  margin: var(--sp-md) 0;
+}
+.guide-do, .guide-dont {
+  border-radius: var(--r-md); padding: var(--sp-md);
+  text-align: center; font-size: 13px;
+}
+.guide-do {
+  background: rgba(168,181,160,0.15); border: 1.5px solid rgba(168,181,160,0.3);
+  color: #5A7352;
+}
+.guide-dont {
+  background: rgba(184,96,77,0.08); border: 1.5px solid rgba(184,96,77,0.15);
+  color: var(--alert);
+}
+.guide-do svg, .guide-dont svg { display: block; margin: 0 auto var(--sp-sm); }
+
+/* ========== CAMERA ========== */
+#screen-camera {
+  background: #1A1517; padding: 48px 0 34px;
+  align-items: center; justify-content: space-between;
+}
+#screen-camera .back-btn { color: white; }
+[dir="rtl"] #screen-camera .back-btn { right: auto; left: var(--screen-pad); }
+[dir="ltr"] #screen-camera .back-btn { left: auto; right: var(--screen-pad); }
+
+.viewfinder {
+  flex: 1; display: flex; align-items: center; justify-content: center; width: 100%;
+}
+.cam-frame {
+  width: 200px; height: 200px;
+  border: 2px solid rgba(255,255,255,0.3); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.cam-frame::after {
+  content: ''; position: absolute; inset: -10px;
+  border: 1.5px dashed rgba(201,123,99,0.4); border-radius: 50%;
+}
+.cam-label {
+  color: rgba(255,255,255,0.7); font-size: 13px; text-align: center;
+  position: relative; z-index: 2;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+.cam-feedback {
+  color: var(--sage); font-size: 16px; font-weight: 500;
+  text-align: center; padding: var(--sp-md) var(--screen-pad); min-height: 52px;
+}
+.cam-controls {
+  padding: 0 var(--screen-pad) var(--sp-md);
+  display: flex; align-items: center; justify-content: center;
+  gap: var(--sp-xl); width: 100%;
+}
+.shutter {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: white; border: 4px solid rgba(255,255,255,0.3);
+  cursor: pointer; transition: transform 0.1s;
+}
+.shutter:active { transform: scale(0.92); }
+.gallery-btn {
+  width: 44px; height: 44px; border-radius: var(--r-sm);
+  background: rgba(255,255,255,0.15); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ========== QUESTIONS ========== */
+.q-group { margin-bottom: var(--sp-lg); }
+.q-group label {
+  display: block; font-size: 16px; font-weight: 500;
+  margin-bottom: var(--sp-sm); color: var(--deep-plum);
+}
+.privacy-badge {
+  display: flex; align-items: center; gap: var(--sp-sm);
+  font-size: 13px; color: rgba(61,42,53,0.5);
+  margin-top: var(--sp-lg); padding: var(--sp-md);
+  background: rgba(61,42,53,0.03); border-radius: var(--r-sm);
+}
+
+/* ========== WAITING ========== */
+#screen-waiting {
+  justify-content: center; align-items: center; text-align: center; gap: var(--sp-xl);
+}
+.breath-wrap {
+  position: relative; width: 200px; height: 200px;
+  display: flex; align-items: center; justify-content: center;
+}
+.breath {
+  position: absolute; border-radius: 50%;
+  animation: breathe 4s var(--ease-breathing) infinite;
+}
+.breath-1 {
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(201,123,99,0.15) 0%, rgba(201,123,99,0.03) 70%);
+}
+.breath-2 {
+  width: 120px; height: 120px;
+  background: radial-gradient(circle, rgba(168,181,160,0.2) 0%, rgba(168,181,160,0.05) 70%);
+  animation-delay: -1.3s;
+}
+.breath-3 {
+  width: 60px; height: 60px;
+  background: radial-gradient(circle, rgba(212,175,140,0.3) 0%, rgba(212,175,140,0.08) 70%);
+  animation-delay: -2.6s;
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(0.85); opacity: 0.6; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+.wait-msg { font-size: 16px; color: rgba(61,42,53,0.6); transition: opacity var(--motion-slow); }
+.wait-sub { font-size: 13px; color: rgba(61,42,53,0.35); }
+
+/* ========== RESULT ========== */
+#screen-result { padding-top: 70px; gap: var(--sp-md); }
+.result-card {
+  background: var(--warm-white); border-radius: var(--r-md);
+  padding: var(--sp-lg); box-shadow: var(--shadow-card); text-align: center;
+}
+.result-pct {
+  font-family: var(--font-display); font-size: 48px; font-weight: 600;
+  margin: var(--sp-md) 0 var(--sp-xs);
+}
+.result-lbl { font-size: 14px; color: rgba(61,42,53,0.5); margin-bottom: var(--sp-md); }
+.conf-bar { display: flex; align-items: center; gap: var(--sp-sm); justify-content: center; margin-bottom: var(--sp-md); }
+.conf-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold-dust); }
+.conf-text { font-size: 13px; color: rgba(61,42,53,0.5); }
+.result-ctx { font-size: 15px; line-height: 1.6; color: rgba(61,42,53,0.7); }
+[dir="rtl"] .result-ctx { text-align: right; }
+[dir="ltr"] .result-ctx { text-align: left; }
+
+/* Retest reminder */
+.retest-banner {
+  background: rgba(212,175,140,0.15); border: 1.5px solid rgba(212,175,140,0.3);
+  border-radius: var(--r-md); padding: var(--sp-md);
+  display: flex; align-items: flex-start; gap: var(--sp-sm);
+}
+.retest-banner svg { min-width: 20px; color: var(--gold-dust); margin-top: 2px; }
+.retest-banner p { font-size: 14px; line-height: 1.5; }
+.retest-banner strong { font-weight: 600; }
+
+/* Medical expand */
+.med-expand { overflow: hidden; max-height: 0; transition: max-height 0.4s var(--ease); }
+.med-expand.open { max-height: 800px; }
+.med-inner {
+  padding-top: var(--sp-md); border-top: 1px solid rgba(61,42,53,0.08); margin-top: var(--sp-md);
+}
+.med-inner h3 { margin-bottom: var(--sp-xs); font-size: 15px; }
+.med-inner p { font-size: 14px; line-height: 1.6; color: rgba(61,42,53,0.65); margin-bottom: var(--sp-sm); }
+.urgent-box {
+  background: rgba(184,96,77,0.08); border: 1.5px solid rgba(184,96,77,0.2);
+  border-radius: var(--r-md); padding: var(--sp-md); margin-top: var(--sp-md);
+}
+.urgent-box h3 { color: var(--alert); margin-bottom: var(--sp-xs); font-size: 15px; }
+.urgent-box p { font-size: 14px; }
+
+.steps-list { list-style: none; display: flex; flex-direction: column; gap: var(--sp-sm); margin-top: var(--sp-sm); }
+.steps-list li { position: relative; font-size: 14px; line-height: 1.5; }
+[dir="rtl"] .steps-list li { padding-right: var(--sp-md); }
+[dir="ltr"] .steps-list li { padding-left: var(--sp-md); }
+.steps-list li::before {
+  content: ''; position: absolute; top: 10px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--gold-dust);
+}
+[dir="rtl"] .steps-list li::before { right: 0; }
+[dir="ltr"] .steps-list li::before { left: 0; }
+
+.result-actions { display: flex; flex-direction: column; gap: var(--sp-sm); }
+
+/* ========== HELP ========== */
+.res-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: var(--sp-md); background: var(--warm-white); border-radius: var(--r-md);
+  margin-bottom: var(--sp-sm); box-shadow: var(--shadow-subtle); min-height: 44px;
+}
+.res-info { flex: 1; }
+.res-name { font-size: 15px; font-weight: 500; }
+.res-note { font-size: 13px; color: rgba(61,42,53,0.5); margin-top: 2px; }
+.res-phone {
+  direction: ltr; font-size: 16px; font-weight: 600; color: var(--rose-clay);
+  text-decoration: none; min-width: 44px; min-height: 44px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ========== HISTORY ========== */
+.hist-entry {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: var(--sp-md); background: var(--warm-white); border-radius: var(--r-md);
+  box-shadow: var(--shadow-subtle); margin-bottom: var(--sp-sm);
+}
+.hist-date { font-size: 14px; color: rgba(61,42,53,0.5); }
+.hist-pct { font-size: 18px; font-weight: 600; font-family: var(--font-display); }
+.hist-del {
+  width: 44px; height: 44px; border: none;
+  background: rgba(61,42,53,0.05); border-radius: var(--r-sm);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: var(--deep-plum); transition: background var(--motion-fast);
+}
+.hist-del:hover { background: rgba(201,123,99,0.1); }
+
+/* ========== SETTINGS ========== */
+.set-section { margin-bottom: var(--sp-lg); }
+.set-section h3 {
+  font-size: 13px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.05em; color: rgba(61,42,53,0.4); margin-bottom: var(--sp-sm);
+}
+.set-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: var(--sp-md) 0; border-bottom: 1px solid rgba(61,42,53,0.06); min-height: 44px;
+}
+.set-info { flex: 1; }
+.set-label { font-size: 16px; font-weight: 500; }
+.set-desc { font-size: 13px; color: rgba(61,42,53,0.45); margin-top: 2px; }
+
+.lang-pills {
+  display: flex; background: rgba(61,42,53,0.06);
+  border-radius: var(--r-pill); padding: 2px;
+}
+.lang-pills button {
+  padding: 6px 16px; border: none; border-radius: var(--r-pill);
+  font-size: 14px; font-weight: 500; font-family: var(--font-body);
+  cursor: pointer; background: transparent; color: rgba(61,42,53,0.5);
+  transition: all var(--motion-fast); min-height: 32px;
+}
+.lang-pills button.active { background: var(--rose-clay); color: white; }
+
+/* Demo video in guide */
+.btn-demo-video {
+  display: flex; align-items: center; justify-content: center; gap: var(--sp-sm);
+  width: 100%; padding: 14px; border: none; border-radius: var(--r-md);
+  background: rgba(201,123,99,0.08); color: var(--rose-clay);
+  font-family: var(--font-body); font-size: 15px; font-weight: 500;
+  cursor: pointer; transition: background var(--motion-fast);
+}
+.btn-demo-video:hover { background: rgba(201,123,99,0.14); }
+.btn-demo-video svg { color: var(--rose-clay); }
+
+.demo-video-container {
+  overflow: hidden; max-height: 0;
+  transition: max-height 0.5s var(--ease), margin 0.3s;
+  margin: 0;
+}
+.demo-video-container.open {
+  max-height: 500px; margin-top: var(--sp-md);
+}
+.demo-video-player {
+  background: var(--warm-white); border-radius: var(--r-md);
+  box-shadow: var(--shadow-card); overflow: hidden;
+}
+.demo-video-player video {
+  width: 100%; display: block;
+  border-radius: var(--r-md);
+}
+
+/* Prototype-only nav (dev tool, not part of the app) */
+.dev-nav {
+  position: absolute; bottom: 34px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 3px; padding: 4px 8px;
+  background: rgba(61,42,53,0.85); backdrop-filter: blur(8px);
+  border-radius: var(--r-pill); z-index: 200;
+  opacity: 0.35; transition: opacity 0.2s;
+}
+.dev-nav:hover { opacity: 1; }
+.dev-nav button {
+  padding: 4px 8px; font-size: 10px; font-family: var(--font-body);
+  background: rgba(255,255,255,0.1); color: white; border: none;
+  border-radius: 6px; cursor: pointer; transition: background 0.15s;
+  white-space: nowrap;
+}
+.dev-nav button:hover { background: var(--rose-clay); }
+
+/* Live camera video */
+.cam-video {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; border-radius: 50%;
+}
+</style>
+</head>
+
+<body>
+<div class="phone-frame" id="app">
+
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <svg width="16" height="12" fill="currentColor" viewBox="0 0 16 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/></svg>
+  </div>
+
+  <!-- ===== HOME ===== -->
+  <div class="screen active" id="screen-home">
+    <div class="logo-mark">
+      <svg viewBox="0 0 80 80" fill="none" width="80" height="80">
+        <circle cx="40" cy="40" r="32" fill="none" stroke="#C97B63" stroke-width="2"/>
+        <path d="M40 8 C56 8 68 22 68 40 C68 58 56 72 40 72 C30 72 22 58 28 40 C34 22 30 8 40 8Z" fill="#C97B63" opacity="0.15"/>
+        <circle cx="44" cy="36" r="4" fill="#C97B63" opacity="0.3"/>
+      </svg>
+    </div>
+    <h1 class="home-title" data-i18n="home.title">שלום</h1>
+    <p class="home-sub" data-i18n="home.sub">בואי נתחיל. קחי את הזמן.</p>
+    <div class="home-actions">
+      <button class="btn btn-primary" onclick="goTo('screen-guide')" data-i18n="home.new">בדיקה חדשה</button>
+      <button class="btn btn-secondary" onclick="goTo('screen-history')" data-i18n="home.history">היסטוריה</button>
+      <button class="btn btn-ghost" onclick="goTo('screen-settings')" data-i18n="home.settings">הגדרות</button>
+    </div>
+    <div class="sp-lg"></div>
+    <div class="disclaimer" data-i18n="disclaimer">לשימוש מחקרי בלבד. מודל הסתברות ניסיוני. אינו תחליף לבדיקה רפואית.</div>
+  </div>
+
+  <!-- ===== PHOTO GUIDE ===== -->
+  <div class="screen" id="screen-guide">
+    <button class="back-btn" onclick="goTo('screen-home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="sp-xl"></div>
+    <h1 data-i18n="guide.title">איך לצלם</h1>
+    <div class="sp-md"></div>
+
+    <!-- Step 1: Cup on white surface -->
+    <div class="guide-card">
+      <svg width="160" height="100" viewBox="0 0 160 100" fill="none">
+        <!-- White surface -->
+        <rect x="10" y="60" width="140" height="30" rx="4" fill="#F7EFE5" stroke="#D4AF8C" stroke-width="1.5"/>
+        <text x="80" y="82" text-anchor="middle" font-size="9" fill="#D4AF8C" font-family="Heebo">רקע לבן</text>
+        <!-- Transparent cup -->
+        <path d="M58 30 L54 58 Q54 62 58 62 L102 62 Q106 62 106 58 L102 30 Z" fill="rgba(201,123,99,0.06)" stroke="#C97B63" stroke-width="1.5" stroke-linejoin="round"/>
+        <!-- Urine level -->
+        <path d="M56 42 L55 58 Q55 61 58 61 L102 61 Q105 61 105 58 L104 42 Z" fill="rgba(212,175,140,0.3)"/>
+        <!-- Cup rim highlight -->
+        <line x1="58" y1="30" x2="102" y2="30" stroke="#C97B63" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <h3 data-i18n="guide.s1_title">כוסית שקופה על רקע לבן</h3>
+      <p data-i18n="guide.s1_desc">שפכי דגימת שתן לכוסית שקופה והניחי על משטח לבן</p>
+    </div>
+
+    <!-- Step 2: Phone angle -->
+    <div class="guide-card">
+      <svg width="160" height="120" viewBox="0 0 160 120" fill="none">
+        <!-- Surface -->
+        <rect x="30" y="85" width="100" height="6" rx="3" fill="#F7EFE5" stroke="#D4AF8C" stroke-width="1"/>
+        <!-- Cup from above (circle) -->
+        <ellipse cx="80" cy="78" rx="22" ry="8" fill="rgba(212,175,140,0.3)" stroke="#C97B63" stroke-width="1.5"/>
+        <ellipse cx="80" cy="78" rx="18" ry="6" fill="rgba(212,175,140,0.15)" stroke="none"/>
+        <!-- Phone -->
+        <rect x="60" y="8" width="40" height="24" rx="4" fill="var(--deep-plum)" opacity="0.8"/>
+        <circle cx="80" cy="20" r="4" fill="none" stroke="#C97B63" stroke-width="1.5"/>
+        <circle cx="80" cy="20" r="1.5" fill="#C97B63"/>
+        <!-- Arrow down -->
+        <line x1="80" y1="36" x2="80" y2="62" stroke="#C97B63" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <polygon points="75,58 80,68 85,58" fill="#C97B63"/>
+        <!-- 15-20cm label -->
+        <text x="115" y="52" font-size="9" fill="rgba(61,42,53,0.5)" font-family="Heebo">15-20 ס״מ</text>
+        <line x1="108" y1="36" x2="108" y2="68" stroke="rgba(61,42,53,0.2)" stroke-width="1"/>
+        <line x1="105" y1="36" x2="111" y2="36" stroke="rgba(61,42,53,0.2)" stroke-width="1"/>
+        <line x1="105" y1="68" x2="111" y2="68" stroke="rgba(61,42,53,0.2)" stroke-width="1"/>
+      </svg>
+      <h3 data-i18n="guide.s2_title">צלמי מלמעלה, ישר</h3>
+      <p data-i18n="guide.s2_desc">החזיקי את הטלפון 15-20 ס״מ מעל הכוסית, מצלמה מכוונת ישר למטה</p>
+    </div>
+
+    <!-- Step 3: Lighting -->
+    <div class="guide-card">
+      <svg width="160" height="90" viewBox="0 0 160 90" fill="none">
+        <!-- Sun rays -->
+        <circle cx="40" cy="25" r="12" fill="none" stroke="#D4AF8C" stroke-width="1.5"/>
+        <circle cx="40" cy="25" r="6" fill="#D4AF8C" opacity="0.3"/>
+        <line x1="40" y1="8" x2="40" y2="3" stroke="#D4AF8C" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="40" y1="42" x2="40" y2="47" stroke="#D4AF8C" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="23" y1="25" x2="18" y2="25" stroke="#D4AF8C" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="57" y1="25" x2="62" y2="25" stroke="#D4AF8C" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- Rays to cup -->
+        <line x1="52" y1="35" x2="75" y2="55" stroke="#D4AF8C" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>
+        <line x1="55" y1="38" x2="85" y2="55" stroke="#D4AF8C" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>
+        <!-- Cup small -->
+        <ellipse cx="90" cy="65" rx="18" ry="6" fill="rgba(212,175,140,0.2)" stroke="#C97B63" stroke-width="1"/>
+        <!-- Flash X -->
+        <g transform="translate(125, 20)">
+          <polygon points="6,0 8,8 12,8 9,13 11,22 6,16 1,22 3,13 0,8 4,8" fill="none" stroke="rgba(184,96,77,0.4)" stroke-width="1.5"/>
+          <line x1="-2" y1="-2" x2="14" y2="24" stroke="var(--alert)" stroke-width="2" stroke-linecap="round"/>
+        </g>
+      </svg>
+      <h3 data-i18n="guide.s3_title">אור טבעי, ללא פלאש</h3>
+      <p data-i18n="guide.s3_desc">אור יום מפוזר נותן את התוצאה הטובה ביותר. אין להשתמש בפלאש</p>
+    </div>
+
+    <!-- Do / Don't -->
+    <div class="guide-do-dont">
+      <div class="guide-do">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="14" fill="rgba(168,181,160,0.2)" stroke="#7A9471" stroke-width="1.5"/>
+          <polyline points="10,17 14,21 22,12" fill="none" stroke="#7A9471" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span data-i18n="guide.do">כוסית שקופה<br>רקע לבן<br>אור יום</span>
+      </div>
+      <div class="guide-dont">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="14" fill="rgba(184,96,77,0.1)" stroke="#B8604D" stroke-width="1.5"/>
+          <line x1="11" y1="11" x2="21" y2="21" stroke="#B8604D" stroke-width="2" stroke-linecap="round"/>
+          <line x1="21" y1="11" x2="11" y2="21" stroke="#B8604D" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span data-i18n="guide.dont">כוסית צבעונית<br>רקע כהה<br>פלאש</span>
+      </div>
+    </div>
+
+    <div class="sp-md"></div>
+    <p class="text-sm" style="text-align:center;" data-i18n="guide.tip">לא בטוחה? צלמי שוב. אין הגבלה.</p>
+    <div class="sp-lg"></div>
+
+    <!-- Demo video button -->
+    <button class="btn-demo-video" id="btn-demo-video" onclick="toggleDemoVideo()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor" stroke="none"/></svg>
+      <span data-i18n="guide.video">צפי בסרטון הדגמה (15 שניות)</span>
+    </button>
+
+    <!-- Demo video — real MP4 -->
+    <div class="demo-video-container" id="demo-video">
+      <div class="demo-video-player">
+        <video id="demo-vid"
+          src="demo-how-to-photograph.mp4"
+          playsinline muted loop
+          preload="metadata"
+          poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' fill='none'%3E%3Crect width='300' height='200' rx='12' fill='%23FDFBF7'/%3E%3Ctext x='150' y='105' text-anchor='middle' font-family='Heebo,sans-serif' font-size='14' fill='%23C97B63'%3E%E2%96%B6 %D7%A1%D7%A8%D7%98%D7%95%D7%9F %D7%94%D7%93%D7%92%D7%9E%D7%94%3C/text%3E%3C/svg%3E"
+          style="width:100%; display:block; border-radius:var(--r-md) var(--r-md) 0 0; background:#FDFBF7;"
+        ></video>
+      </div>
+    </div>
+
+    <div class="sp-lg"></div>
+    <button class="btn btn-primary" onclick="goTo('screen-camera')" data-i18n="guide.cta">פתחי מצלמה</button>
+    <div class="sp-lg"></div>
+  </div>
+
+  <!-- ===== CAMERA ===== -->
+  <div class="screen" id="screen-camera">
+    <button class="back-btn" onclick="goTo('screen-guide')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="viewfinder">
+      <div class="cam-frame">
+        <video id="cam-video" class="cam-video" autoplay playsinline muted></video>
+        <span class="cam-label" id="cam-label-text" data-i18n="cam.label">מרכזי את<br>הכוסית כאן</span>
+      </div>
+    </div>
+    <div class="cam-feedback" data-i18n="cam.good">מעולה. לחצי כשמוכנה</div>
+    <div class="cam-controls">
+      <button class="gallery-btn" onclick="document.getElementById('file-input').click()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+      <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handlePhoto(this)">
+      <button class="shutter" id="shutter-btn" onclick="capturePhoto()"></button>
+      <div style="width:44px;"></div>
+    </div>
+  </div>
+
+  <!-- ===== QUESTIONS ===== -->
+  <div class="screen" id="screen-questions">
+    <button class="back-btn" onclick="goTo('screen-camera')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="sp-xl"></div>
+    <h1 data-i18n="q.title">שתי שאלות קצרות</h1>
+    <p class="text-sm" data-i18n="q.sub">עוזר לדיוק הניתוח. לא חובה.</p>
+    <div class="sp-lg"></div>
+
+    <div class="q-group">
+      <label data-i18n="q.q1">מתי הייתה המחזור האחרון</label>
+      <div class="chips">
+        <span class="chip" onclick="toggleChip(this)" data-i18n="q.q1a">בשבוע האחרון</span>
+        <span class="chip" onclick="toggleChip(this)" data-i18n="q.q1b">לפני 1-2 שבועות</span>
+        <span class="chip" onclick="toggleChip(this)" data-i18n="q.q1c">לפני 2-4 שבועות</span>
+        <span class="chip" onclick="toggleChip(this)" data-i18n="q.q1d">לפני יותר מחודש</span>
+        <span class="chip" onclick="toggleChip(this)" data-i18n="q.q1e">לא זוכרת</span>
+      </div>
+    </div>
+
+    <div class="q-group">
+      <label data-i18n="q.q2">מתי נלקחה הדגימה</label>
+      <div class="options">
+        <div class="opt" onclick="toggleOpt(this)" data-i18n="q.q2a">שתן בוקר (ראשון של היום)</div>
+        <div class="opt" onclick="toggleOpt(this)" data-i18n="q.q2b">במהלך היום</div>
+        <div class="opt" onclick="toggleOpt(this)" data-i18n="q.q2c">בערב</div>
+      </div>
+    </div>
+
+    <div class="privacy-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+      <span data-i18n="q.privacy">נשמר על המכשיר בלבד.</span>
+    </div>
+
+    <div class="sp-lg"></div>
+    <button class="btn btn-primary" onclick="startAnalysis()" data-i18n="q.next">המשיכי</button>
+    <div class="sp-sm"></div>
+    <button class="btn btn-ghost" onclick="startAnalysis()" data-i18n="q.skip">דלגי</button>
+  </div>
+
+  <!-- ===== WAITING ===== -->
+  <div class="screen" id="screen-waiting" role="status">
+    <div class="breath-wrap">
+      <div class="breath breath-1"></div>
+      <div class="breath breath-2"></div>
+      <div class="breath breath-3"></div>
+    </div>
+    <div>
+      <h2 style="text-align:center;" data-i18n="wait.title">מנתחת את הדגימה</h2>
+      <div class="sp-sm"></div>
+      <p class="wait-msg" id="wait-msg" data-i18n="wait.m1">קחי נשימה עמוקה</p>
+      <div class="sp-sm"></div>
+      <p class="wait-sub" data-i18n="wait.dur">בדרך כלל 8 עד 12 שניות</p>
+    </div>
+  </div>
+
+  <!-- ===== RESULT ===== -->
+  <div class="screen" id="screen-result">
+    <div class="disclaimer" data-i18n="disclaimer">לשימוש מחקרי בלבד. מודל הסתברות ניסיוני. אינו תחליף לבדיקה רפואית.</div>
+    <div class="sp-sm"></div>
+
+    <div class="result-card">
+      <p class="result-lbl" data-i18n="res.label">ההסתברות לפי ניתוח הדגימה</p>
+      <div class="result-pct">74%</div>
+      <div class="conf-bar">
+        <span class="conf-dot"></span>
+        <span class="conf-text" data-i18n="res.conf">רמת ודאות המודל: גבוהה</span>
+      </div>
+      <p class="result-ctx" data-i18n="res.ctx">הניתוח מזהה סימנים בדגימת השתן שעשויים להצביע על הריון. בדיקה רפואית תיתן תשובה ודאית.</p>
+
+      <!-- Medical expand -->
+      <div class="med-expand" id="med-expand">
+        <div class="med-inner">
+          <h3 data-i18n="med.how_title">איך זה עובד</h3>
+          <p data-i18n="med.how_body">המערכת מנתחת את מראה השתן — צבע, עכירות וגוונים — על בסיס מודל שאומן על מיליוני דגימות. שינויים הורמונליים בהריון משפיעים על מאפייני השתן הנראים לעין.</p>
+          <h3 data-i18n="med.next_title">מה עושים עכשיו</h3>
+          <ul class="steps-list">
+            <li data-i18n="med.step1">בדיקת דם ב-hCG היא הדרך האמינה ביותר לאישור</li>
+            <li data-i18n="med.step2">פנו לרופא/ה משפחה או גינקולוג/ית</li>
+          </ul>
+          <div class="urgent-box">
+            <h3 data-i18n="med.urg_t">דחוף</h3>
+            <p data-i18n="med.urg_b">כאב חד בבטן, דימום לא רגיל, או סחרחורת — פנו לחדר מיון.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Retest reminder (for borderline results) -->
+    <div class="retest-banner" id="retest-banner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+      <p data-i18n="res.retest">התוצאה גבולית. <strong data-i18n="res.retest_when">מומלץ לבדוק שוב בעוד יומיים</strong> — ככל שעוברים ימים, רמות ההורמונים משתנות והניתוח מדויק יותר.</p>
+    </div>
+
+    <div class="sp-md"></div>
+    <div class="result-actions">
+      <button class="btn btn-secondary" onclick="toggleMed()" id="btn-med" data-i18n="res.learn">מה זה אומר</button>
+      <button class="btn btn-primary" onclick="goTo('screen-help')" data-i18n="res.talk">דברי עם מישהי</button>
+      <button class="btn btn-ghost" onclick="goTo('screen-camera')" data-i18n="res.retake">צלמי שוב</button>
+    </div>
+  </div>
+
+  <!-- ===== HELP ===== -->
+  <div class="screen" id="screen-help">
+    <button class="back-btn" onclick="goTo('screen-result')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="sp-xl"></div>
+    <h1 data-i18n="help.title">דברי עם מישהי</h1>
+    <p class="text-sm" data-i18n="help.sub">קווים חינמיים וחסויים.</p>
+    <div class="sp-lg"></div>
+
+    <div class="res-item">
+      <div class="res-info">
+        <div class="res-name" data-i18n="help.r1">קו חירום — מד״א</div>
+        <div class="res-note">24/7</div>
+      </div>
+      <a class="res-phone" href="tel:101">101</a>
+    </div>
+    <div class="res-item">
+      <div class="res-info">
+        <div class="res-name" data-i18n="help.r2">ער״ן — עזרה ראשונה נפשית</div>
+        <div class="res-note" data-i18n="help.r2n">24/7, חסוי</div>
+      </div>
+      <a class="res-phone" href="tel:1201">1201</a>
+    </div>
+    <div class="res-item">
+      <div class="res-info">
+        <div class="res-name" data-i18n="help.r3">קו סיוע לנשים</div>
+        <div class="res-note" data-i18n="help.r3n">עברית, ערבית, רוסית</div>
+      </div>
+      <a class="res-phone" href="tel:*6724">*6724</a>
+    </div>
+    <div class="sp-lg"></div>
+    <p class="text-sm" style="text-align:center;" data-i18n="help.foot">כל הפניות חינמיות וחסויות.</p>
+  </div>
+
+  <!-- ===== HISTORY ===== -->
+  <div class="screen" id="screen-history">
+    <button class="back-btn" onclick="goTo('screen-home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="sp-xl"></div>
+    <h1 data-i18n="hist.title">היסטוריה</h1>
+    <div class="sp-lg"></div>
+
+    <div id="hist-list">
+      <div class="hist-entry">
+        <div>
+          <div class="hist-date">21.04.2026</div>
+          <div class="hist-pct">74%</div>
+        </div>
+        <button class="hist-del" onclick="this.closest('.hist-entry').remove()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+        </button>
+      </div>
+      <div class="hist-entry">
+        <div>
+          <div class="hist-date">18.04.2026</div>
+          <div class="hist-pct">31%</div>
+        </div>
+        <button class="hist-del" onclick="this.closest('.hist-entry').remove()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="sp-lg"></div>
+    <button class="btn btn-danger btn-small" style="align-self:center;" data-i18n="hist.del">מחקי הכל</button>
+    <div class="sp-md"></div>
+    <p class="text-sm" style="text-align:center;" data-i18n="hist.priv">הכל נשמר על המכשיר בלבד.</p>
+  </div>
+
+  <!-- Dev nav (prototype only — not part of the app) -->
+  <div class="dev-nav" id="dev-nav">
+    <button onclick="goTo('screen-home')" data-dev="home">🏠</button>
+    <button onclick="goTo('screen-guide')" data-dev="guide">📷</button>
+    <button onclick="goTo('screen-camera')" data-dev="cam">⊙</button>
+    <button onclick="goTo('screen-questions')" data-dev="q">?</button>
+    <button onclick="goTo('screen-waiting')" data-dev="wait">◎</button>
+    <button onclick="goTo('screen-result')" data-dev="res">%</button>
+    <button onclick="goTo('screen-help')" data-dev="help">☏</button>
+    <button onclick="goTo('screen-history')" data-dev="hist">≡</button>
+    <button onclick="goTo('screen-settings')" data-dev="set">⚙</button>
+  </div>
+
+  <!-- ===== SETTINGS ===== -->
+  <div class="screen" id="screen-settings">
+    <button class="back-btn" onclick="goTo('screen-home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="sp-xl"></div>
+    <h1 data-i18n="set.title">הגדרות</h1>
+    <div class="sp-lg"></div>
+
+    <div class="set-section">
+      <h3 data-i18n="set.display">תצוגה</h3>
+      <div class="set-row">
+        <div class="set-info"><div class="set-label" data-i18n="set.lang">שפה</div></div>
+        <div class="lang-pills">
+          <button class="active" id="lp-he" onclick="setLang('he')">עברית</button>
+          <button id="lp-en" onclick="setLang('en')">English</button>
+        </div>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-label" data-i18n="set.dark">מצב חשוך</div></div>
+        <button class="toggle" id="dark-toggle" onclick="toggleDark(this)"></button>
+      </div>
+    </div>
+
+    <div class="set-section">
+      <h3 data-i18n="set.data">מידע</h3>
+      <div class="set-row">
+        <div class="set-info">
+          <div class="set-label" data-i18n="set.autodel">מחיקת תמונות אוטומטית</div>
+          <div class="set-desc" data-i18n="set.autodel_d">תמונות נמחקות מיד אחרי הניתוח</div>
+        </div>
+        <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+      </div>
+    </div>
+
+    <div class="sp-md"></div>
+    <button class="btn btn-danger" data-i18n="set.delall">מחקי את כל המידע</button>
+    <div class="sp-lg"></div>
+    <button class="btn btn-ghost" style="font-size:14px;" data-i18n="set.about">אודות</button>
+    <div class="sp-xl"></div>
+  </div>
+
+</div>
+
+<script>
+/* ========================================
+   TRANSLATIONS — ZERO MIXING
+   ======================================== */
+const T = {
+he: {
+  "home.title":"שלום","home.sub":"בואי נתחיל. קחי את הזמן.","home.new":"בדיקה חדשה","home.history":"היסטוריה","home.settings":"הגדרות",
+  "disclaimer":"לשימוש מחקרי בלבד. מודל הסתברות ניסיוני. אינו תחליף לבדיקה רפואית.",
+  "guide.title":"איך לצלם","guide.s1_title":"כוסית שקופה על רקע לבן","guide.s1_desc":"שפכי דגימת שתן לכוסית שקופה והניחי על משטח לבן",
+  "guide.s2_title":"צלמי מלמעלה, ישר","guide.s2_desc":"החזיקי את הטלפון 15-20 ס״מ מעל הכוסית, מצלמה מכוונת ישר למטה",
+  "guide.s3_title":"אור טבעי, ללא פלאש","guide.s3_desc":"אור יום מפוזר נותן את התוצאה הטובה ביותר. אין להשתמש בפלאש",
+  "guide.do":"כוסית שקופה\nרקע לבן\nאור יום","guide.dont":"כוסית צבעונית\nרקע כהה\nפלאש",
+  "guide.tip":"לא בטוחה? צלמי שוב. אין הגבלה.","guide.cta":"פתחי מצלמה",
+  "guide.video":"צפי בסרטון הדגמה (15 שניות)","guide.demo1":"הניחי את הכוסית על משטח לבן","guide.demo2":"כווני את המצלמה ישר למטה","guide.demo3":"ולחצי על הכפתור",
+  "cam.label":"מרכזי את\nהכוסית כאן","cam.good":"מעולה. לחצי כשמוכנה",
+  "q.title":"שתי שאלות קצרות","q.sub":"עוזר לדיוק הניתוח. לא חובה.",
+  "q.q1":"מתי הייתה המחזור האחרון","q.q1a":"בשבוע האחרון","q.q1b":"לפני 1-2 שבועות","q.q1c":"לפני 2-4 שבועות","q.q1d":"לפני יותר מחודש","q.q1e":"לא זוכרת",
+  "q.q2":"מתי נלקחה הדגימה","q.q2a":"שתן בוקר (ראשון של היום)","q.q2b":"במהלך היום","q.q2c":"בערב",
+  "q.privacy":"נשמר על המכשיר בלבד.","q.next":"המשיכי","q.skip":"דלגי",
+  "wait.title":"מנתחת את הדגימה","wait.m1":"קחי נשימה עמוקה","wait.dur":"בדרך כלל 8 עד 12 שניות",
+  "res.label":"ההסתברות לפי ניתוח הדגימה","res.conf":"רמת ודאות המודל: גבוהה",
+  "res.ctx":"הניתוח מזהה סימנים בדגימת השתן שעשויים להצביע על הריון. בדיקה רפואית תיתן תשובה ודאית.",
+  "res.retest":"התוצאה גבולית. ","res.retest_when":"מומלץ לבדוק שוב בעוד יומיים",
+  "res.learn":"מה זה אומר","res.learn_hide":"הסתירי","res.talk":"דברי עם מישהי","res.retake":"צלמי שוב",
+  "med.how_title":"איך זה עובד","med.how_body":"המערכת מנתחת את מראה השתן — צבע, עכירות וגוונים — על בסיס מודל שאומן על מיליוני דגימות. שינויים הורמונליים בהריון משפיעים על מאפייני השתן הנראים לעין.",
+  "med.next_title":"מה עושים עכשיו","med.step1":"בדיקת דם ב-hCG היא הדרך האמינה ביותר לאישור","med.step2":"פנו לרופא/ה משפחה או גינקולוג/ית",
+  "med.urg_t":"דחוף","med.urg_b":"כאב חד בבטן, דימום לא רגיל, או סחרחורת — פנו לחדר מיון.",
+  "help.title":"דברי עם מישהי","help.sub":"קווים חינמיים וחסויים.",
+  "help.r1":"קו חירום — מד״א","help.r2":"ער״ן — עזרה ראשונה נפשית","help.r2n":"24/7, חסוי","help.r3":"קו סיוע לנשים","help.r3n":"עברית, ערבית, רוסית","help.foot":"כל הפניות חינמיות וחסויות.",
+  "hist.title":"היסטוריה","hist.del":"מחקי הכל","hist.priv":"הכל נשמר על המכשיר בלבד.",
+  "set.title":"הגדרות","set.display":"תצוגה","set.lang":"שפה","set.dark":"מצב חשוך",
+  "set.data":"מידע","set.autodel":"מחיקת תמונות אוטומטית","set.autodel_d":"תמונות נמחקות מיד אחרי הניתוח","set.delall":"מחקי את כל המידע","set.about":"אודות"
+},
+en: {
+  "home.title":"Hello","home.sub":"Let's begin. Take your time.","home.new":"New test","home.history":"History","home.settings":"Settings",
+  "disclaimer":"For research use only. Experimental probability model. Not a substitute for medical testing.",
+  "guide.title":"How to photograph","guide.s1_title":"Clear cup on white surface","guide.s1_desc":"Pour a urine sample into a clear cup and place it on a white surface",
+  "guide.s2_title":"Shoot from above, straight down","guide.s2_desc":"Hold your phone 15-20 cm above the cup, camera pointing straight down",
+  "guide.s3_title":"Natural light, no flash","guide.s3_desc":"Diffused daylight gives the best result. Do not use flash",
+  "guide.do":"Clear cup\nWhite background\nDaylight","guide.dont":"Colored cup\nDark background\nFlash",
+  "guide.tip":"Not sure? Retake. No limits.","guide.cta":"Open camera",
+  "guide.video":"Watch demo video (15 seconds)","guide.demo1":"Place the cup on a white surface","guide.demo2":"Point the camera straight down","guide.demo3":"And tap the button",
+  "cam.label":"Center the\ncup here","cam.good":"Looking good. Tap when ready",
+  "q.title":"Two quick questions","q.sub":"Helps improve accuracy. Optional.",
+  "q.q1":"When was your last period","q.q1a":"In the past week","q.q1b":"1-2 weeks ago","q.q1c":"2-4 weeks ago","q.q1d":"Over a month ago","q.q1e":"Don't remember",
+  "q.q2":"When was the sample taken","q.q2a":"Morning urine (first of the day)","q.q2b":"During the day","q.q2c":"In the evening",
+  "q.privacy":"Saved on device only.","q.next":"Continue","q.skip":"Skip",
+  "wait.title":"Analyzing the sample","wait.m1":"Take a deep breath","wait.dur":"Usually 8 to 12 seconds",
+  "res.label":"Probability based on sample analysis","res.conf":"Model confidence: high",
+  "res.ctx":"The analysis detects signs in the urine sample that may indicate pregnancy. A medical test will provide a definitive answer.",
+  "res.retest":"The result is borderline. ","res.retest_when":"We recommend retesting in two days",
+  "res.learn":"What does this mean","res.learn_hide":"Hide","res.talk":"Talk to someone","res.retake":"Retake photo",
+  "med.how_title":"How it works","med.how_body":"The system analyzes the appearance of urine — color, turbidity, and hue — using a model trained on millions of samples. Hormonal changes during pregnancy affect visible urine characteristics.",
+  "med.next_title":"What to do next","med.step1":"A blood hCG test is the most reliable confirmation","med.step2":"Contact your doctor or OB-GYN",
+  "med.urg_t":"Urgent","med.urg_b":"Sharp abdominal pain, unusual bleeding, or severe dizziness — go to the emergency room.",
+  "help.title":"Talk to someone","help.sub":"Free and confidential lines.",
+  "help.r1":"Emergency — MDA","help.r2":"ERAN — Mental health first aid","help.r2n":"24/7, confidential","help.r3":"Women's support line","help.r3n":"Hebrew, Arabic, Russian","help.foot":"All services are free and confidential.",
+  "hist.title":"History","hist.del":"Delete all","hist.priv":"Everything is stored on device only.",
+  "set.title":"Settings","set.display":"Display","set.lang":"Language","set.dark":"Dark mode",
+  "set.data":"Data","set.autodel":"Auto-delete photos","set.autodel_d":"Photos are deleted immediately after analysis","set.delall":"Delete all data","set.about":"About"
+}
+};
+
+const waitMsgs = {
+  he:['קחי נשימה עמוקה','עוד רגע','בודקת את הדגימה','מעבדת נתונים','כמעט סיימנו'],
+  en:['Take a deep breath','Just a moment','Checking the sample','Processing data','Almost done']
+};
+
+let lang = 'he';
+
+function setLang(l) {
+  lang = l;
+  const html = document.documentElement;
+  html.lang = l;
+  html.dir = l === 'he' ? 'rtl' : 'ltr';
+  if (l === 'en') html.style.setProperty('--font-display',"'Fraunces',serif");
+  else html.style.setProperty('--font-display',"'Noto Serif Hebrew','Fraunces',serif");
+
+  const s = T[l];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n');
+    if (s[k] != null) {
+      if (el.tagName === 'SPAN' && el.innerHTML.includes('<br>')) {
+        el.innerHTML = s[k].replace(/\n/g,'<br>');
+      } else {
+        el.textContent = s[k];
+      }
+    }
+  });
+
+  // Fix SVG text inside guide (Hebrew labels in illustrations)
+  document.querySelectorAll('.guide-card svg text').forEach(t => {
+    if (l === 'en' && t.textContent === 'רקע לבן') t.textContent = 'white bg';
+    if (l === 'he' && t.textContent === 'white bg') t.textContent = 'רקע לבן';
+    if (l === 'en' && t.textContent === '15-20 ס״מ') t.textContent = '15-20 cm';
+    if (l === 'he' && t.textContent === '15-20 cm') t.textContent = '15-20 ס״מ';
+  });
+
+  // Update do/dont with line breaks
+  document.querySelectorAll('.guide-do span, .guide-dont span').forEach(el => {
+    const k = el.getAttribute('data-i18n');
+    if (s[k]) el.innerHTML = s[k].replace(/\n/g,'<br>');
+  });
+
+  // Camera label
+  const cl = document.querySelector('.cam-label');
+  if (cl && s['cam.label']) cl.innerHTML = s['cam.label'].replace(/\n/g,'<br>');
+
+  // Lang pills
+  document.querySelectorAll('.lang-pills button').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('lp-'+l);
+  if (btn) btn.classList.add('active');
+}
+
+/* ========================================
+   DEMO VIDEO — plays real MP4 file
+   Place demo-how-to-photograph.mp4 in the
+   design-system folder. See video-prompt-veo3.md
+   for the Veo3 prompt to generate it.
+   ======================================== */
+function toggleDemoVideo() {
+  const c = document.getElementById('demo-video');
+  const vid = document.getElementById('demo-vid');
+  if (c.classList.contains('open')) {
+    c.classList.remove('open');
+    vid.pause();
+    vid.currentTime = 0;
+    return;
+  }
+  c.classList.add('open');
+  vid.currentTime = 0;
+  vid.play().catch(() => {});
+}
+
+function stopDemo() {
+  const c = document.getElementById('demo-video');
+  const vid = document.getElementById('demo-vid');
+  if (c) c.classList.remove('open');
+  if (vid) { vid.pause(); vid.currentTime = 0; }
+}
+
+/* ========================================
+   CAMERA — real device camera
+   ======================================== */
+let cameraStream = null;
+
+async function startCamera() {
+  const video = document.getElementById('cam-video');
+  const label = document.getElementById('cam-label-text');
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 1280 } },
+      audio: false
+    });
+    video.srcObject = cameraStream;
+    video.style.display = 'block';
+    label.style.opacity = '0.6';
+  } catch (err) {
+    // Camera not available — keep the placeholder label visible
+    video.style.display = 'none';
+    label.style.opacity = '1';
+  }
+}
+
+function stopCamera() {
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(t => t.stop());
+    cameraStream = null;
+  }
+  const video = document.getElementById('cam-video');
+  if (video) { video.srcObject = null; video.style.display = 'none'; }
+}
+
+function capturePhoto() {
+  // In a real app this would capture a frame from the video and send to the model.
+  // For the prototype, we move to the next screen.
+  stopCamera();
+  goTo('screen-questions');
+}
+
+function handlePhoto(input) {
+  // User picked a photo from gallery — skip to questions
+  if (input.files && input.files[0]) {
+    stopCamera();
+    goTo('screen-questions');
+  }
+}
+
+/* Navigation */
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const t = document.getElementById(id);
+  if (t) { t.classList.add('active'); t.scrollTop = 0; }
+
+  const sb = document.querySelector('.status-bar');
+  if (id === 'screen-camera') {
+    sb.style.color = 'white';
+    sb.style.background = 'linear-gradient(to bottom, rgba(0,0,0,0.3) 70%, transparent)';
+    startCamera();
+  } else {
+    sb.style.color = ''; sb.style.background = '';
+    stopCamera();
+  }
+  if (id === 'screen-waiting') startWait();
+  if (id !== 'screen-guide') { stopDemo(); document.getElementById('demo-video').classList.remove('open'); }
+  if (id !== 'screen-result') {
+    document.getElementById('med-expand').classList.remove('open');
+    document.getElementById('btn-med').textContent = T[lang]['res.learn'];
+  }
+}
+
+/* Interactions */
+function toggleChip(el) { el.classList.toggle('selected'); }
+function toggleOpt(el) {
+  el.parentElement.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function toggleMed() {
+  const p = document.getElementById('med-expand');
+  const b = document.getElementById('btn-med');
+  p.classList.toggle('open');
+  b.textContent = p.classList.contains('open') ? T[lang]['res.learn_hide'] : T[lang]['res.learn'];
+}
+
+/* Waiting */
+let waitInt;
+function startWait() {
+  clearInterval(waitInt);
+  let i = 0;
+  const msgs = waitMsgs[lang], el = document.getElementById('wait-msg');
+  waitInt = setInterval(() => {
+    i = (i+1) % msgs.length;
+    el.style.opacity = '0';
+    setTimeout(() => { el.textContent = msgs[i]; el.style.opacity = '1'; }, 300);
+  }, 2000);
+  setTimeout(() => {
+    clearInterval(waitInt);
+    if (document.getElementById('screen-waiting').classList.contains('active')) goTo('screen-result');
+  }, 10000);
+}
+function startAnalysis() { goTo('screen-waiting'); }
+
+/* Dark mode */
+function toggleDark(btn) {
+  btn.classList.toggle('on');
+  document.getElementById('app').toggleAttribute('data-theme');
+  if (btn.classList.contains('on')) document.getElementById('app').setAttribute('data-theme','dark');
+  else document.getElementById('app').removeAttribute('data-theme');
+}
+
+/* Clock */
+function tick() {
+  const d = new Date();
+  document.querySelector('.status-bar .time').textContent =
+    d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+}
+tick(); setInterval(tick,30000);
+goTo('screen-home');
+</script>
+</body>
+</html>
