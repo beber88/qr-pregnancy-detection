@@ -326,7 +326,13 @@ def predict_with_model(features, input_type):
     """Run prediction using best available model."""
     _load_models()
     if not _models:
-        return None, "No models available"
+        # Debug: check what path we're looking at
+        debug = f"MODELS_DIR={MODELS_DIR}, exists={os.path.isdir(MODELS_DIR)}"
+        if os.path.isdir(MODELS_DIR):
+            debug += f", files={os.listdir(MODELS_DIR)}"
+        else:
+            debug += f", PROJECT_ROOT={PROJECT_ROOT}, ls={os.listdir(PROJECT_ROOT) if os.path.isdir(PROJECT_ROOT) else 'N/A'}"
+        return None, debug
 
     # Select best model for input type
     if input_type == "video":
