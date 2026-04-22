@@ -336,11 +336,12 @@ class handler(BaseHTTPRequestHandler):
 
             _load_models()
 
-            # Find best model
+            # Find best model — match input type to avoid zero-padding
+            # Photo should NOT use Combined (video features would be all zeros)
             if input_type == "video":
                 search_order = ["Video", "Combined"]
             else:
-                search_order = ["Combined", "Photo_V2"]
+                search_order = ["Photo_V2", "Combined"]
 
             prob = None
             tier_used = None
