@@ -55,22 +55,24 @@ def _load_models():
 def predict_logistic(model_data, features):
     """Run LogisticRegression prediction from JSON weights."""
     feature_names = model_data["features"]
-    coef = np.array(model_data["coef"][0])  # shape (n_features,)
+    coef = np.array(model_data["coef"][0])
     intercept = model_data["intercept"][0]
     scaler = model_data.get("scaler")
 
-    # Build feature vector
-    X = np.array([features.get(f, 0.0) for f in feature_names], dtype=float)
-
-    # Scale
+    # Build feature vector — use scaler mean as default for missing features
+    # This prevents zero-filling from causing extreme scaled values
     if scaler:
         mean = np.array(scaler["mean"])
         scale = np.array(scaler["scale"])
         scale = np.where(np.abs(scale) < 1e-10, 1.0, scale)
+        X = np.array([features.get(f, mean[i]) for i, f in enumerate(feature_names)], dtype=float)
         X = (X - mean) / scale
+    else:
+        X = np.array([features.get(f, 0.0) for f in feature_names], dtype=float)
 
-    # Logistic: P(y=1) = sigmoid(X @ coef + intercept)
     z = float(np.dot(X, coef) + intercept)
+    # Clamp to prevent overflow
+    z = max(-20, min(20, z))
     prob = 1.0 / (1.0 + math.exp(-z))
     return prob
 
