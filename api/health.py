@@ -2,7 +2,6 @@
 from http.server import BaseHTTPRequestHandler
 import json
 import os
-import pickle
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
@@ -12,11 +11,11 @@ class handler(BaseHTTPRequestHandler):
         tiers = {}
         if os.path.isdir(MODELS_DIR):
             for f in os.listdir(MODELS_DIR):
-                if f.endswith(".pkl"):
+                if f.endswith(".json"):
                     try:
-                        with open(os.path.join(MODELS_DIR, f), "rb") as fh:
-                            d = pickle.load(fh)
-                        tiers[d.get("tier","?")] = {"auc": d.get("best_auc"), "classifier": d.get("classifier")}
+                        with open(os.path.join(MODELS_DIR, f)) as fh:
+                            d = json.load(fh)
+                        tiers[d.get("tier","?")] = {"auc": d.get("auc"), "classifier": d.get("classifier")}
                     except:
                         pass
 
