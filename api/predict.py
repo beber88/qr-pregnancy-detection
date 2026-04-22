@@ -29,12 +29,15 @@ _models = {}
 _loaded = False
 
 
+_load_errors = []
+
 def _load_models():
-    global _models, _loaded
+    global _models, _loaded, _load_errors
     if _loaded:
         return
 
     if not os.path.isdir(MODELS_DIR):
+        _load_errors.append(f"MODELS_DIR not found: {MODELS_DIR}")
         return
 
     for fname in os.listdir(MODELS_DIR):
@@ -49,8 +52,8 @@ def _load_models():
                 "features": data["features"],
                 "auc": data.get("best_auc", 0),
             }
-        except Exception:
-            pass
+        except Exception as e:
+            _load_errors.append(f"{fname}: {type(e).__name__}: {str(e)[:200]}")
 
     _loaded = True
 
@@ -332,6 +335,7 @@ def predict_with_model(features, input_type):
             debug += f", files={os.listdir(MODELS_DIR)}"
         else:
             debug += f", PROJECT_ROOT={PROJECT_ROOT}, ls={os.listdir(PROJECT_ROOT) if os.path.isdir(PROJECT_ROOT) else 'N/A'}"
+        debug += f", errors={_load_errors}"
         return None, debug
 
     # Select best model for input type
