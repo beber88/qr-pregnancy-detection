@@ -3,9 +3,12 @@
   "outputDirectory": ".",
   "framework": null,
   "functions": {
-    "api/*.py": {
-      "runtime": "@vercel/python@4.7.0",
-      "maxDuration": 60
+    "api/predict.py": {
+      "maxDuration": 60,
+      "memory": 1024
+    },
+    "api/health.py": {
+      "maxDuration": 10
     }
   },
   "rewrites": [
