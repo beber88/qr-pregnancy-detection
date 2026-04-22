@@ -2,6 +2,12 @@
   "buildCommand": null,
   "outputDirectory": ".",
   "framework": null,
+  "functions": {
+    "api/*.py": {
+      "runtime": "@vercel/python@4.7.0",
+      "maxDuration": 60
+    }
+  },
   "rewrites": [
     { "source": "/", "destination": "/design-system/prototype.html" }
   ]

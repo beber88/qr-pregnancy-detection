@@ -1,9 +1,11 @@
-# Data & models — never commit patient images/videos
+# Data — never commit patient images/videos
 data/
-models/
 PICTURES/
 PICTURES - VIDEO/
 logs/
+
+# Keep models (small pkl files needed for Vercel deployment)
+# models/ is NOT ignored
 
 # Python
 __pycache__/

@@ -1078,9 +1078,7 @@ function stopCamera() {
 }
 
 // ── AI Backend Connection ──
-const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? 'http://localhost:8000'
-  : ''; // Will be set when deployed with backend
+const API_BASE = ''; // Same origin — works on Vercel and localhost
 let pendingFile = null;
 
 function capturePhoto() {
