@@ -15,7 +15,7 @@ import cv2
 
 # Paths
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PICTURES_DIR = os.path.join(PROJECT_ROOT, "PICTURES")
+PICTURES_DIR = os.path.join(PROJECT_ROOT, "PICTURES - VIDEO")
 PROCESSED_DIR = os.path.join(PROJECT_ROOT, "data", "processed")
 FRAMES_DIR = os.path.join(PROJECT_ROOT, "data", "raw", "video_frames")
 INDEX_CSV = os.path.join(PROCESSED_DIR, "index.csv")
