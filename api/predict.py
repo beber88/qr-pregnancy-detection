@@ -359,11 +359,19 @@ class handler(BaseHTTPRequestHandler):
                         tier_used = tier
                         break
 
+            # Include top features for debugging
+            debug_feats = {}
+            if features:
+                for k in ["r_mean","g_mean","b_mean","layla_r_ratio","gy_ratio","brightness","dominant_hue"]:
+                    if k in features:
+                        debug_feats[k] = features[k]
+
             self._respond(200, {
                 "probability": round(prob, 4) if prob is not None else None,
                 "input_type": input_type,
                 "model_tier": tier_used or "none",
                 "status": "success" if prob is not None else "model_not_available",
+                "features_sample": debug_feats,
                 "disclaimer": DISCLAIMER,
             })
 
