@@ -1122,7 +1122,7 @@ async function analyzeWithAI() {
   formData.append('file', pendingFile);
 
   try {
-    const resp = await fetch(API_BASE + '/predict', {
+    const resp = await fetch(API_BASE + '/api/predict', {
       method: 'POST',
       body: formData,
     });
