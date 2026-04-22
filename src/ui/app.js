@@ -25,7 +25,27 @@
     var featuresTable = document.getElementById("featuresTable");
     var featuresBody = document.getElementById("featuresBody");
 
+    var cameraInput = document.getElementById("cameraInput");
+    var cameraBtn = document.getElementById("cameraBtn");
+    var galleryBtn = document.getElementById("galleryBtn");
+    var fileNameMobile = document.getElementById("fileNameMobile");
+
     var selectedFile = null;
+
+    // --- Mobile camera/gallery buttons ---
+    cameraBtn.addEventListener("click", function () {
+        cameraInput.click();
+    });
+
+    galleryBtn.addEventListener("click", function () {
+        fileInput.click();
+    });
+
+    cameraInput.addEventListener("change", function () {
+        if (cameraInput.files.length > 0) {
+            handleFile(cameraInput.files[0]);
+        }
+    });
 
     // --- Drop zone events ---
     dropZone.addEventListener("click", function () {
@@ -65,6 +85,8 @@
 
         selectedFile = file;
         fileName.textContent = file.name;
+        fileNameMobile.textContent = file.name;
+        fileNameMobile.classList.add("visible");
         dropZone.classList.add("has-file");
         analyzeBtn.disabled = false;
 

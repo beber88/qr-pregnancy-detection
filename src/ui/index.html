@@ -291,6 +291,118 @@
             background: #fff5f5;
             border-radius: 8px;
         }
+
+        /* Mobile camera buttons */
+        .mobile-actions {
+            display: none;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .camera-btn, .gallery-btn {
+            flex: 1;
+            padding: 14px 12px;
+            border: 2px solid #4361ee;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .camera-btn {
+            background: #4361ee;
+            color: white;
+        }
+
+        .camera-btn:active { background: #3a56d4; }
+
+        .gallery-btn {
+            background: white;
+            color: #4361ee;
+        }
+
+        .gallery-btn:active { background: #f0f4ff; }
+
+        /* Mobile responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 16px 14px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .subtitle {
+                font-size: 13px;
+                margin-bottom: 18px;
+            }
+
+            .disclaimer-banner {
+                font-size: 12px;
+                padding: 10px 14px;
+            }
+
+            /* Hide drag-and-drop zone on mobile, show action buttons */
+            .drop-zone {
+                display: none;
+            }
+
+            .mobile-actions {
+                display: flex;
+            }
+
+            .preview-container img {
+                max-height: 220px;
+            }
+
+            .analyze-btn {
+                font-size: 16px;
+                padding: 14px;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            .result-card {
+                padding: 20px 16px;
+                border-radius: 12px;
+            }
+
+            .gauge-svg {
+                width: 160px;
+                height: 100px;
+            }
+
+            .gauge-value {
+                font-size: 28px;
+            }
+
+            .features-table td, .features-table th {
+                padding: 5px 6px;
+                font-size: 11px;
+            }
+
+            .file-name-mobile {
+                text-align: center;
+                font-size: 13px;
+                color: #28a745;
+                font-weight: 600;
+                margin-bottom: 10px;
+                display: none;
+            }
+
+            .file-name-mobile.visible {
+                display: block;
+            }
+        }
+
+        /* Prevent iOS zoom on focus */
+        @media (max-width: 600px) {
+            input, select, textarea, button {
+                font-size: 16px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -311,6 +423,14 @@
         </div>
 
         <input type="file" id="fileInput" accept="image/jpeg,image/png,image/jpg" hidden>
+        <input type="file" id="cameraInput" accept="image/jpeg,image/png" capture="environment" hidden>
+
+        <!-- Mobile action buttons -->
+        <div class="mobile-actions" id="mobileActions">
+            <button class="camera-btn" id="cameraBtn">📷 Take Photo</button>
+            <button class="gallery-btn" id="galleryBtn">🖼 Gallery</button>
+        </div>
+        <div class="file-name-mobile" id="fileNameMobile"></div>
 
         <!-- Image preview -->
         <div class="preview-container" id="previewContainer">
