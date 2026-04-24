@@ -664,12 +664,15 @@ h3 { font-size: 17px; font-weight: 600; line-height: 1.3; }
     </div>
     <div class="cam-feedback" data-i18n="cam.good">מעולה. לחצי כשמוכנה</div>
     <div class="cam-controls">
-      <button class="gallery-btn" onclick="document.getElementById('file-input').click()">
+      <button class="gallery-btn" onclick="document.getElementById('file-input').click()" style="position:relative;">
         <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="3"/></svg>
       </button>
-      <input type="file" id="file-input" accept="image/*,video/mp4,video/quicktime" style="display:none" onchange="handlePhoto(this)">
+      <input type="file" id="file-input" accept="image/*,video/mp4,video/quicktime" capture="environment" style="display:none" onchange="handlePhoto(this)">
       <button class="shutter" id="shutter-btn" onclick="capturePhoto()"></button>
-      <div style="width:44px;"></div>
+      <button class="gallery-btn" onclick="document.getElementById('file-input-gallery').click()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" width="20" height="20"><rect x="2" y="2" width="20" height="20" rx="3"/><path d="M2 16l5-5 4 4 4-6 7 7"/><circle cx="8" cy="8" r="2"/></svg>
+      </button>
+      <input type="file" id="file-input-gallery" accept="image/*,video/mp4,video/quicktime" style="display:none" onchange="handlePhoto(this)">
     </div>
   </div>
 
@@ -1053,18 +1056,39 @@ let cameraStream = null;
 async function startCamera() {
   const video = document.getElementById('cam-video');
   const label = document.getElementById('cam-label-text');
+  const feedback = document.querySelector('#screen-camera .cam-feedback');
   try {
+    // Check if getUserMedia is available (requires HTTPS)
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      throw new Error('Camera API not available');
+    }
     cameraStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 1280 } },
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 1280 } },
       audio: false
     });
     video.srcObject = cameraStream;
     video.style.display = 'block';
     label.style.opacity = '0.6';
+    if (feedback) {
+      feedback.textContent = lang === 'he' ? 'מעולה. לחצי כשמוכנה' : 'Looking good. Tap when ready';
+      feedback.style.color = '';
+    }
   } catch (err) {
-    // Camera not available — keep the placeholder label visible
+    console.error('Camera error:', err.name, err.message);
     video.style.display = 'none';
+    label.innerHTML = lang === 'he'
+      ? 'לא ניתן לפתוח מצלמה<br><br><b>השתמשי בכפתור הגלריה למטה</b>'
+      : 'Cannot open camera<br><br><b>Use the gallery button below</b>';
     label.style.opacity = '1';
+    label.style.fontSize = '14px';
+    if (feedback) {
+      if (err.name === 'NotAllowedError') {
+        feedback.textContent = lang === 'he' ? 'יש לאשר הרשאת מצלמה בהגדרות הדפדפן' : 'Please allow camera access in browser settings';
+      } else {
+        feedback.textContent = lang === 'he' ? 'העלי תמונה מהגלריה במקום' : 'Upload a photo from gallery instead';
+      }
+      feedback.style.color = '#D4AF8C';
+    }
   }
 }
 
@@ -1095,8 +1119,8 @@ function capturePhoto() {
       goTo('screen-questions');
     }, 'image/jpeg', 0.92);
   } else {
-    stopCamera();
-    goTo('screen-questions');
+    // Camera not available — open native camera via file input with capture
+    document.getElementById('file-input').click();
   }
 }
 
@@ -1310,10 +1334,14 @@ function startWait() {
     el.style.opacity = '0';
     setTimeout(() => { el.textContent = msgs[i]; el.style.opacity = '1'; }, 300);
   }, 2000);
+  // Safety timeout: if API takes too long (30 seconds), show error
   setTimeout(() => {
     clearInterval(waitInt);
-    if (document.getElementById('screen-waiting').classList.contains('active')) goTo('screen-result');
-  }, 10000);
+    if (document.getElementById('screen-waiting').classList.contains('active')) {
+      updateResult(null, null, lang === 'he' ? 'הניתוח לקח יותר מדי זמן. נסי שוב.' : 'Analysis took too long. Try again.');
+      goTo('screen-result');
+    }
+  }, 30000);
 }
 function startAnalysis() { analyzeWithAI(); }
 
