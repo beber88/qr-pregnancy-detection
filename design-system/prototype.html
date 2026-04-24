@@ -676,45 +676,152 @@ h3 { font-size: 17px; font-weight: 600; line-height: 1.3; }
     </div>
   </div>
 
-  <!-- ===== QUESTIONS ===== -->
+  <!-- ===== QUESTIONS (basic - always shown) ===== -->
   <div class="screen" id="screen-questions">
     <button class="back-btn" onclick="goTo('screen-camera')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
     </button>
     <div class="sp-xl"></div>
-    <h1 data-i18n="q.title">שתי שאלות קצרות</h1>
-    <p class="text-sm" data-i18n="q.sub">עוזר לדיוק הניתוח. לא חובה.</p>
+    <h1 data-i18n="q.title">שאלון קצר</h1>
+    <p class="text-sm" data-i18n="q.sub">עוזר לדיוק הניתוח. ניתן לדלג.</p>
     <div class="sp-lg"></div>
 
+    <!-- Q1: Last period -->
     <div class="q-group">
       <label data-i18n="q.q1">מתי הייתה המחזור האחרון</label>
-      <div class="chips">
-        <span class="chip" onclick="toggleChip(this)" data-i18n="q.q1a">בשבוע האחרון</span>
-        <span class="chip" onclick="toggleChip(this)" data-i18n="q.q1b">לפני 1-2 שבועות</span>
-        <span class="chip" onclick="toggleChip(this)" data-i18n="q.q1c">לפני 2-4 שבועות</span>
-        <span class="chip" onclick="toggleChip(this)" data-i18n="q.q1d">לפני יותר מחודש</span>
-        <span class="chip" onclick="toggleChip(this)" data-i18n="q.q1e">לא זוכרת</span>
+      <div class="chips" id="q-period">
+        <span class="chip" onclick="selectChip(this,'q-period')" data-val="week" data-i18n="q.q1a">בשבוע האחרון</span>
+        <span class="chip" onclick="selectChip(this,'q-period')" data-val="1-2w" data-i18n="q.q1b">לפני 1-2 שבועות</span>
+        <span class="chip" onclick="selectChip(this,'q-period')" data-val="2-4w" data-i18n="q.q1c">לפני 2-4 שבועות</span>
+        <span class="chip" onclick="selectChip(this,'q-period')" data-val="month+" data-i18n="q.q1d">לפני יותר מחודש</span>
+        <span class="chip" onclick="selectChip(this,'q-period')" data-val="unknown" data-i18n="q.q1e">לא זוכרת</span>
       </div>
     </div>
 
+    <!-- Q2: Sample time -->
     <div class="q-group">
       <label data-i18n="q.q2">מתי נלקחה הדגימה</label>
-      <div class="options">
-        <div class="opt" onclick="toggleOpt(this)" data-i18n="q.q2a">שתן בוקר (ראשון של היום)</div>
-        <div class="opt" onclick="toggleOpt(this)" data-i18n="q.q2b">במהלך היום</div>
-        <div class="opt" onclick="toggleOpt(this)" data-i18n="q.q2c">בערב</div>
+      <div class="options" id="q-sample-time">
+        <div class="opt" onclick="selectOpt(this,'q-sample-time')" data-val="morning" data-i18n="q.q2a">שתן בוקר (ראשון של היום)</div>
+        <div class="opt" onclick="selectOpt(this,'q-sample-time')" data-val="day" data-i18n="q.q2b">במהלך היום</div>
+        <div class="opt" onclick="selectOpt(this,'q-sample-time')" data-val="evening" data-i18n="q.q2c">בערב</div>
       </div>
     </div>
 
+    <!-- Q3: Age -->
+    <div class="q-group">
+      <label data-i18n="q.q3">גיל</label>
+      <div class="chips" id="q-age">
+        <span class="chip" onclick="selectChip(this,'q-age')" data-val="18-24">18-24</span>
+        <span class="chip" onclick="selectChip(this,'q-age')" data-val="25-30">25-30</span>
+        <span class="chip" onclick="selectChip(this,'q-age')" data-val="31-35">31-35</span>
+        <span class="chip" onclick="selectChip(this,'q-age')" data-val="36+">36+</span>
+      </div>
+    </div>
+
+    <div class="sp-md"></div>
+
+    <!-- Expand: Full medical questionnaire -->
+    <button class="btn-demo-video" id="btn-expand-medical" onclick="toggleMedicalForm()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M9 12h6M12 9v6"/><circle cx="12" cy="12" r="10"/></svg>
+      <span data-i18n="q.expand">שאלון רפואי מורחב (מומלץ לדיוק מקסימלי)</span>
+    </button>
+
+    <div class="med-expand" id="medical-form">
+      <div class="med-inner" style="border-top:none; padding-top:var(--sp-sm);">
+
+        <!-- Q4: Fluids -->
+        <div class="q-group">
+          <label data-i18n="q.q4">כמה שתית בשעתיים האחרונות</label>
+          <div class="chips" id="q-fluids">
+            <span class="chip" onclick="selectChip(this,'q-fluids')" data-val="none" data-i18n="q.q4a">לא שתיתי</span>
+            <span class="chip" onclick="selectChip(this,'q-fluids')" data-val="1cup" data-i18n="q.q4b">כוס אחת</span>
+            <span class="chip" onclick="selectChip(this,'q-fluids')" data-val="2-3cups" data-i18n="q.q4c">2-3 כוסות</span>
+            <span class="chip" onclick="selectChip(this,'q-fluids')" data-val="4+cups" data-i18n="q.q4d">4 כוסות ומעלה</span>
+          </div>
+        </div>
+
+        <!-- Q5: Coffee/Tea -->
+        <div class="q-group">
+          <label data-i18n="q.q5">קפה או תה ב-4 השעות האחרונות</label>
+          <div class="chips" id="q-coffee">
+            <span class="chip" onclick="selectChip(this,'q-coffee')" data-val="yes" data-i18n="q.q5a">כן</span>
+            <span class="chip" onclick="selectChip(this,'q-coffee')" data-val="no" data-i18n="q.q5b">לא</span>
+          </div>
+        </div>
+
+        <!-- Q6: Medications & Supplements -->
+        <div class="q-group">
+          <label data-i18n="q.q6">תרופות ותוספים (ב-24 שעות אחרונות)</label>
+          <div class="chips" id="q-meds">
+            <span class="chip" onclick="toggleChip(this)" data-val="multivitamin" data-i18n="q.q6a">מולטיויטמין</span>
+            <span class="chip" onclick="toggleChip(this)" data-val="b-complex" data-i18n="q.q6b">ויטמין B</span>
+            <span class="chip" onclick="toggleChip(this)" data-val="folic" data-i18n="q.q6c">חומצה פולית</span>
+            <span class="chip" onclick="toggleChip(this)" data-val="iron" data-i18n="q.q6d">ברזל</span>
+            <span class="chip" onclick="toggleChip(this)" data-val="calcium" data-i18n="q.q6e">סידן</span>
+            <span class="chip" onclick="toggleChip(this)" data-val="hormones" data-i18n="q.q6f">הורמונים (אוטרוגסטן וכו׳)</span>
+            <span class="chip" onclick="toggleChip(this)" data-val="antibiotics" data-i18n="q.q6g">אנטיביוטיקה</span>
+            <span class="chip" onclick="toggleChip(this)" data-val="none" data-i18n="q.q6h">ללא</span>
+          </div>
+        </div>
+
+        <!-- Q7: Health status -->
+        <div class="q-group">
+          <label data-i18n="q.q7">מצב בריאותי (סמני את כל מה שרלוונטי)</label>
+          <div class="chips" id="q-health">
+            <span class="chip" onclick="toggleChip(this)" data-val="uti" data-i18n="q.q7a">דלקת בדרכי השתן</span>
+            <span class="chip" onclick="toggleChip(this)" data-val="diabetes" data-i18n="q.q7b">סוכרת</span>
+            <span class="chip" onclick="toggleChip(this)" data-val="kidney" data-i18n="q.q7c">מחלת כליות</span>
+            <span class="chip" onclick="toggleChip(this)" data-val="nausea" data-i18n="q.q7d">בחילות / הקאות</span>
+            <span class="chip" onclick="toggleChip(this)" data-val="fever" data-i18n="q.q7e">חום מעל 38</span>
+            <span class="chip" onclick="toggleChip(this)" data-val="none" data-i18n="q.q7f">ללא - בריאה</span>
+          </div>
+        </div>
+
+        <!-- Q8: First morning urine -->
+        <div class="q-group">
+          <label data-i18n="q.q8">האם זו ההשתנה הראשונה היום</label>
+          <div class="chips" id="q-first-urine">
+            <span class="chip" onclick="selectChip(this,'q-first-urine')" data-val="yes" data-i18n="q.q8a">כן</span>
+            <span class="chip" onclick="selectChip(this,'q-first-urine')" data-val="no" data-i18n="q.q8b">לא</span>
+          </div>
+        </div>
+
+        <!-- Q9: Last meal -->
+        <div class="q-group">
+          <label data-i18n="q.q9">ארוחה אחרונה</label>
+          <div class="chips" id="q-meal">
+            <span class="chip" onclick="selectChip(this,'q-meal')" data-val="<1h" data-i18n="q.q9a">בשעה האחרונה</span>
+            <span class="chip" onclick="selectChip(this,'q-meal')" data-val="1-3h" data-i18n="q.q9b">לפני 1-3 שעות</span>
+            <span class="chip" onclick="selectChip(this,'q-meal')" data-val="3h+" data-i18n="q.q9c">לפני יותר מ-3 שעות</span>
+          </div>
+        </div>
+
+        <!-- Q10: Known pregnancy -->
+        <div class="q-group">
+          <label data-i18n="q.q10">האם את יודעת שאת בהריון</label>
+          <div class="chips" id="q-known-preg">
+            <span class="chip" onclick="selectChip(this,'q-known-preg')" data-val="yes-blood" data-i18n="q.q10a">כן (בדיקת דם)</span>
+            <span class="chip" onclick="selectChip(this,'q-known-preg')" data-val="yes-ultra" data-i18n="q.q10b">כן (אולטרסאונד)</span>
+            <span class="chip" onclick="selectChip(this,'q-known-preg')" data-val="yes-home" data-i18n="q.q10c">כן (בדיקה ביתית)</span>
+            <span class="chip" onclick="selectChip(this,'q-known-preg')" data-val="no" data-i18n="q.q10d">לא</span>
+            <span class="chip" onclick="selectChip(this,'q-known-preg')" data-val="unsure" data-i18n="q.q10e">לא בטוחה</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="sp-md"></div>
     <div class="privacy-badge">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
-      <span data-i18n="q.privacy">נשמר על המכשיר בלבד.</span>
+      <span data-i18n="q.privacy">נשמר על המכשיר בלבד. לא נשלח לשום מקום.</span>
     </div>
 
     <div class="sp-lg"></div>
-    <button class="btn btn-primary" onclick="startAnalysis()" data-i18n="q.next">המשיכי</button>
+    <button class="btn btn-primary" onclick="startAnalysis()" data-i18n="q.next">שלחי לניתוח</button>
     <div class="sp-sm"></div>
-    <button class="btn btn-ghost" onclick="startAnalysis()" data-i18n="q.skip">דלגי</button>
+    <button class="btn btn-ghost" onclick="startAnalysis()" data-i18n="q.skip">דלגי ושלחי בלי שאלון</button>
   </div>
 
   <!-- ===== WAITING ===== -->
@@ -922,10 +1029,19 @@ he: {
   "guide.tip":"לא בטוחה? צלמי שוב. אין הגבלה.","guide.cta":"פתחי מצלמה",
   "guide.video":"צפי בסרטון הדגמה (15 שניות)","guide.demo1":"הניחי את הכוסית על משטח לבן","guide.demo2":"כווני את המצלמה ישר למטה","guide.demo3":"ולחצי על הכפתור",
   "cam.label":"מרכזי את\nהכוסית כאן","cam.good":"מעולה. לחצי כשמוכנה",
-  "q.title":"שתי שאלות קצרות","q.sub":"עוזר לדיוק הניתוח. לא חובה.",
+  "q.title":"שאלון קצר","q.sub":"עוזר לדיוק הניתוח. ניתן לדלג.",
   "q.q1":"מתי הייתה המחזור האחרון","q.q1a":"בשבוע האחרון","q.q1b":"לפני 1-2 שבועות","q.q1c":"לפני 2-4 שבועות","q.q1d":"לפני יותר מחודש","q.q1e":"לא זוכרת",
   "q.q2":"מתי נלקחה הדגימה","q.q2a":"שתן בוקר (ראשון של היום)","q.q2b":"במהלך היום","q.q2c":"בערב",
-  "q.privacy":"נשמר על המכשיר בלבד.","q.next":"המשיכי","q.skip":"דלגי",
+  "q.q3":"גיל",
+  "q.expand":"שאלון רפואי מורחב (מומלץ לדיוק מקסימלי)",
+  "q.q4":"כמה שתית בשעתיים האחרונות","q.q4a":"לא שתיתי","q.q4b":"כוס אחת","q.q4c":"2-3 כוסות","q.q4d":"4 כוסות ומעלה",
+  "q.q5":"קפה או תה ב-4 השעות האחרונות","q.q5a":"כן","q.q5b":"לא",
+  "q.q6":"תרופות ותוספים (ב-24 שעות אחרונות)","q.q6a":"מולטיויטמין","q.q6b":"ויטמין B","q.q6c":"חומצה פולית","q.q6d":"ברזל","q.q6e":"סידן","q.q6f":"הורמונים (אוטרוגסטן וכו׳)","q.q6g":"אנטיביוטיקה","q.q6h":"ללא",
+  "q.q7":"מצב בריאותי","q.q7a":"דלקת בדרכי השתן","q.q7b":"סוכרת","q.q7c":"מחלת כליות","q.q7d":"בחילות / הקאות","q.q7e":"חום מעל 38","q.q7f":"ללא - בריאה",
+  "q.q8":"האם זו ההשתנה הראשונה היום","q.q8a":"כן","q.q8b":"לא",
+  "q.q9":"ארוחה אחרונה","q.q9a":"בשעה האחרונה","q.q9b":"לפני 1-3 שעות","q.q9c":"לפני יותר מ-3 שעות",
+  "q.q10":"האם את יודעת שאת בהריון","q.q10a":"כן (בדיקת דם)","q.q10b":"כן (אולטרסאונד)","q.q10c":"כן (בדיקה ביתית)","q.q10d":"לא","q.q10e":"לא בטוחה",
+  "q.privacy":"נשמר על המכשיר בלבד. לא נשלח לשום מקום.","q.next":"שלחי לניתוח","q.skip":"דלגי ושלחי בלי שאלון",
   "wait.title":"מנתחת את הדגימה","wait.m1":"קחי נשימה עמוקה","wait.dur":"בדרך כלל 8 עד 12 שניות",
   "res.label":"ההסתברות לפי ניתוח הדגימה","res.conf":"רמת ודאות המודל: גבוהה",
   "res.ctx":"הניתוח מזהה סימנים בדגימת השתן שעשויים להצביע על הריון. בדיקה רפואית תיתן תשובה ודאית.",
@@ -950,10 +1066,19 @@ en: {
   "guide.tip":"Not sure? Retake. No limits.","guide.cta":"Open camera",
   "guide.video":"Watch demo video (15 seconds)","guide.demo1":"Place the cup on a white surface","guide.demo2":"Point the camera straight down","guide.demo3":"And tap the button",
   "cam.label":"Center the\ncup here","cam.good":"Looking good. Tap when ready",
-  "q.title":"Two quick questions","q.sub":"Helps improve accuracy. Optional.",
+  "q.title":"Quick questionnaire","q.sub":"Helps improve accuracy. You can skip.",
   "q.q1":"When was your last period","q.q1a":"In the past week","q.q1b":"1-2 weeks ago","q.q1c":"2-4 weeks ago","q.q1d":"Over a month ago","q.q1e":"Don't remember",
   "q.q2":"When was the sample taken","q.q2a":"Morning urine (first of the day)","q.q2b":"During the day","q.q2c":"In the evening",
-  "q.privacy":"Saved on device only.","q.next":"Continue","q.skip":"Skip",
+  "q.q3":"Age",
+  "q.expand":"Extended medical questionnaire (recommended for best accuracy)",
+  "q.q4":"How much did you drink in the last 2 hours","q.q4a":"Nothing","q.q4b":"One cup","q.q4c":"2-3 cups","q.q4d":"4 cups or more",
+  "q.q5":"Coffee or tea in the last 4 hours","q.q5a":"Yes","q.q5b":"No",
+  "q.q6":"Medications & supplements (past 24 hours)","q.q6a":"Multivitamin","q.q6b":"Vitamin B","q.q6c":"Folic acid","q.q6d":"Iron","q.q6e":"Calcium","q.q6f":"Hormones (Utrogestan etc.)","q.q6g":"Antibiotics","q.q6h":"None",
+  "q.q7":"Health status","q.q7a":"Urinary tract infection","q.q7b":"Diabetes","q.q7c":"Kidney disease","q.q7d":"Nausea / vomiting","q.q7e":"Fever above 38C","q.q7f":"None - healthy",
+  "q.q8":"Is this your first urination today","q.q8a":"Yes","q.q8b":"No",
+  "q.q9":"Last meal","q.q9a":"Within the past hour","q.q9b":"1-3 hours ago","q.q9c":"More than 3 hours ago",
+  "q.q10":"Do you know if you are pregnant","q.q10a":"Yes (blood test)","q.q10b":"Yes (ultrasound)","q.q10c":"Yes (home test)","q.q10d":"No","q.q10e":"Not sure",
+  "q.privacy":"Saved on device only. Not sent anywhere.","q.next":"Send for analysis","q.skip":"Skip and send without questionnaire",
   "wait.title":"Analyzing the sample","wait.m1":"Take a deep breath","wait.dur":"Usually 8 to 12 seconds",
   "res.label":"Probability based on sample analysis","res.conf":"Model confidence: high",
   "res.ctx":"The analysis detects signs in the urine sample that may indicate pregnancy. A medical test will provide a definitive answer.",
@@ -1312,9 +1437,48 @@ function goTo(id) {
 
 /* Interactions */
 function toggleChip(el) { el.classList.toggle('selected'); }
+function selectChip(el, groupId) {
+  document.getElementById(groupId).querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function selectOpt(el, groupId) {
+  document.getElementById(groupId).querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
 function toggleOpt(el) {
   el.parentElement.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
+}
+function toggleMedicalForm() {
+  const form = document.getElementById('medical-form');
+  const btn = document.getElementById('btn-expand-medical');
+  form.classList.toggle('open');
+  const isOpen = form.classList.contains('open');
+  btn.querySelector('span').textContent = isOpen
+    ? (lang === 'he' ? 'הסתירי שאלון רפואי מורחב' : 'Hide extended medical questionnaire')
+    : T[lang]['q.expand'];
+  btn.querySelector('svg').innerHTML = isOpen
+    ? '<path d="M15 12H9"/><circle cx="12" cy="12" r="10"/>'
+    : '<path d="M9 12h6M12 9v6"/><circle cx="12" cy="12" r="10"/>';
+}
+function collectQuestionnaire() {
+  const data = {};
+  // Single-select groups
+  ['q-period','q-sample-time','q-age','q-fluids','q-coffee','q-first-urine','q-meal','q-known-preg'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const sel = el.querySelector('.chip.selected, .opt.selected');
+    data[id] = sel ? sel.getAttribute('data-val') : null;
+  });
+  // Multi-select groups
+  ['q-meds','q-health'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const vals = [];
+    el.querySelectorAll('.chip.selected').forEach(c => vals.push(c.getAttribute('data-val')));
+    data[id] = vals;
+  });
+  return data;
 }
 function toggleMed() {
   const p = document.getElementById('med-expand');
