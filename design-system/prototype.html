@@ -1430,8 +1430,14 @@ function goTo(id) {
   if (id === 'screen-waiting') startWait();
   if (id !== 'screen-guide') { stopDemo(); document.getElementById('demo-video').classList.remove('open'); }
   if (id !== 'screen-result') {
-    document.getElementById('med-expand').classList.remove('open');
-    document.getElementById('btn-med').textContent = T[lang]['res.learn'];
+    const medExp = document.getElementById('med-expand');
+    const btnMed = document.getElementById('btn-med');
+    if (medExp) medExp.classList.remove('open');
+    if (btnMed) btnMed.textContent = T[lang]['res.learn'];
+  }
+  if (id !== 'screen-questions') {
+    const medForm = document.getElementById('medical-form');
+    if (medForm) medForm.classList.remove('open');
   }
 }
 
