@@ -2,8 +2,8 @@
 Vercel Serverless Function — /api/predict
 Accepts photo or video upload, returns real AI prediction.
 
-Loads sklearn PKL models (RandomForest/LogisticRegression).
-Falls back to JSON LogisticRegression weights if sklearn unavailable.
+Supports RandomForest (JSON tree export) and LogisticRegression (JSON weights).
+No sklearn dependency — pure numpy prediction.
 
 Research use only. Experimental probability model. Not a diagnostic test.
 """
@@ -15,30 +15,22 @@ import sys
 import tempfile
 import math
 import traceback
-import pickle
 
 import cv2
 import numpy as np
-
-try:
-    import sklearn
-    HAS_SKLEARN = True
-except ImportError:
-    HAS_SKLEARN = False
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
 DISCLAIMER = "Research use only. Experimental probability model. Not a diagnostic test."
 
-# ── Load models at cold start ──
+# ── Load JSON models at cold start ──
 _models = {}
-_pkl_models = {}
 _loaded = False
 _load_errors = []
 
 
 def _load_models():
-    global _models, _pkl_models, _loaded, _load_errors
+    global _models, _loaded, _load_errors
     if _loaded:
         return
     if not os.path.isdir(MODELS_DIR):
@@ -46,20 +38,6 @@ def _load_models():
         _loaded = True
         return
 
-    # Load PKL models (sklearn RandomForest etc.)
-    if HAS_SKLEARN:
-        for fname in os.listdir(MODELS_DIR):
-            if not fname.endswith(".pkl"):
-                continue
-            try:
-                with open(os.path.join(MODELS_DIR, fname), "rb") as f:
-                    data = pickle.load(f)
-                tier = data.get("tier", "unknown")
-                _pkl_models[tier] = data
-            except Exception as e:
-                _load_errors.append(f"pkl:{fname}: {e}")
-
-    # Load JSON models (LogisticRegression fallback)
     for fname in os.listdir(MODELS_DIR):
         if not fname.endswith(".json"):
             continue
@@ -67,9 +45,12 @@ def _load_models():
             with open(os.path.join(MODELS_DIR, fname)) as f:
                 data = json.load(f)
             tier = data.get("tier", "unknown")
-            _models[tier] = data
+            model_type = data.get("type", "unknown")
+            # Prefer random_forest over logistic for same tier
+            if tier not in _models or model_type == "random_forest":
+                _models[tier] = data
         except Exception as e:
-            _load_errors.append(f"json:{fname}: {e}")
+            _load_errors.append(f"{fname}: {e}")
 
     _loaded = True
 
@@ -97,6 +78,55 @@ def predict_logistic(model_data, features):
     z = max(-20, min(20, z))
     prob = 1.0 / (1.0 + math.exp(-z))
     return prob
+
+
+def predict_random_forest(model_data, features):
+    """Run RandomForest prediction from JSON tree export. No sklearn needed."""
+    feature_names = model_data["features"]
+    scaler = model_data.get("scaler")
+
+    # Build and scale feature vector
+    if scaler:
+        mean = np.array(scaler["mean"])
+        scale = np.array(scaler["scale"])
+        scale = np.where(np.abs(scale) < 1e-10, 1.0, scale)
+        X = np.array([features.get(f, mean[i]) for i, f in enumerate(feature_names)], dtype=float)
+        X = (X - mean) / scale
+    else:
+        X = np.array([features.get(f, 0.0) for f in feature_names], dtype=float)
+
+    # Predict with each tree and average
+    votes = []
+    for tree_data in model_data["trees"]:
+        feat = tree_data["feature"]
+        thresh = tree_data["threshold"]
+        left = tree_data["children_left"]
+        right = tree_data["children_right"]
+        value = tree_data["value"]
+
+        # Traverse tree
+        node = 0
+        while feat[node] >= 0:  # -2 means leaf
+            if X[feat[node]] <= thresh[node]:
+                node = left[node]
+            else:
+                node = right[node]
+
+        # value[node] is [[count_class0, count_class1]]
+        counts = value[node][0]
+        total = sum(counts)
+        prob_positive = counts[1] / total if total > 0 else 0.5
+        votes.append(prob_positive)
+
+    return float(np.mean(votes))
+
+
+def predict_model(model_data, features):
+    """Predict using the appropriate model type."""
+    model_type = model_data.get("type", "logistic")
+    if model_type == "random_forest":
+        return predict_random_forest(model_data, features)
+    return predict_logistic(model_data, features)
 
 
 # ── Feature extraction (self-contained) ──
@@ -370,38 +400,21 @@ class handler(BaseHTTPRequestHandler):
             tier_used = None
             model_type = None
 
-            # Priority 1: PKL models (sklearn RandomForest — better accuracy)
-            if _pkl_models:
-                for tier in search_order:
-                    if tier in _pkl_models:
-                        try:
-                            pkl = _pkl_models[tier]
-                            pipeline = pkl["model"]
-                            feat_names = pkl["features"]
-                            X = np.array([[features.get(f, 0.0) for f in feat_names]])
-                            prob = float(pipeline.predict_proba(X)[0, 1])
-                            tier_used = tier
-                            model_type = pkl.get("classifier", "sklearn")
-                            break
-                        except Exception:
-                            pass
+            # Find best matching model
+            for tier in search_order:
+                if tier in _models:
+                    prob = predict_model(_models[tier], features)
+                    tier_used = tier
+                    model_type = _models[tier].get("type", "unknown")
+                    break
 
-            # Priority 2: JSON models (LogisticRegression fallback)
+            # Fallback: try any available model
             if prob is None:
-                for tier in search_order:
-                    if tier in _models and _models[tier].get("type") == "logistic":
-                        prob = predict_logistic(_models[tier], features)
-                        tier_used = tier
-                        model_type = "LogisticRegression_JSON"
-                        break
-
-            if prob is None and _models:
                 for tier, m in _models.items():
-                    if m.get("type") == "logistic":
-                        prob = predict_logistic(m, features)
-                        tier_used = tier
-                        model_type = "LogisticRegression_JSON"
-                        break
+                    prob = predict_model(m, features)
+                    tier_used = tier
+                    model_type = m.get("type", "unknown")
+                    break
 
             # Include top features for debugging
             debug_feats = {}
