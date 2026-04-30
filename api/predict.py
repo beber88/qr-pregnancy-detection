@@ -375,7 +375,7 @@ class handler(BaseHTTPRequestHandler):
                 return
 
             ext = os.path.splitext(filename)[1].lower()
-            is_video = ext in (".mp4", ".mov", ".avi")
+            is_video = ext in (".mp4", ".mov", ".avi", ".webm")
 
             if is_video:
                 features = extract_video_features(file_data)

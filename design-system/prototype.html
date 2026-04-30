@@ -279,9 +279,14 @@ h3 { font-size: 17px; font-weight: 600; line-height: 1.3; }
 .shutter {
   width: 72px; height: 72px; border-radius: 50%;
   background: white; border: 4px solid rgba(255,255,255,0.3);
-  cursor: pointer; transition: transform 0.1s;
+  cursor: pointer; transition: transform 0.1s, background 0.3s;
 }
 .shutter:active { transform: scale(0.92); }
+.shutter.recording {
+  background: #ff4444; border-color: rgba(255,68,68,0.5);
+  animation: pulse-rec 1s ease-in-out infinite;
+}
+@keyframes pulse-rec { 0%,100% { transform: scale(1); } 50% { transform: scale(0.9); } }
 .gallery-btn {
   width: 44px; height: 44px; border-radius: var(--r-sm);
   background: rgba(255,255,255,0.15); border: none; cursor: pointer;
@@ -662,7 +667,7 @@ h3 { font-size: 17px; font-weight: 600; line-height: 1.3; }
         <span class="cam-label" id="cam-label-text" data-i18n="cam.label">מרכזי את<br>הכוסית כאן</span>
       </div>
     </div>
-    <div class="cam-feedback" data-i18n="cam.good">מעולה. לחצי כשמוכנה</div>
+    <div class="cam-feedback" data-i18n="cam.good">לחצי — צילום וידאו 5 שניות</div>
     <div class="cam-controls">
       <button class="gallery-btn" onclick="document.getElementById('file-input').click()" style="position:relative;">
         <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="3"/></svg>
@@ -1028,7 +1033,7 @@ he: {
   "guide.do":"כוסית שקופה\nרקע לבן\nאור יום","guide.dont":"כוסית צבעונית\nרקע כהה\nפלאש",
   "guide.tip":"לא בטוחה? צלמי שוב. אין הגבלה.","guide.cta":"פתחי מצלמה",
   "guide.video":"צפי בסרטון הדגמה (15 שניות)","guide.demo1":"הניחי את הכוסית על משטח לבן","guide.demo2":"כווני את המצלמה ישר למטה","guide.demo3":"ולחצי על הכפתור",
-  "cam.label":"מרכזי את\nהכוסית כאן","cam.good":"מעולה. לחצי כשמוכנה",
+  "cam.label":"מרכזי את\nהכוסית כאן","cam.good":"לחצי — צילום וידאו 5 שניות",
   "q.title":"שאלון קצר","q.sub":"עוזר לדיוק הניתוח. ניתן לדלג.",
   "q.q1":"מתי הייתה המחזור האחרון","q.q1a":"בשבוע האחרון","q.q1b":"לפני 1-2 שבועות","q.q1c":"לפני 2-4 שבועות","q.q1d":"לפני יותר מחודש","q.q1e":"לא זוכרת",
   "q.q2":"מתי נלקחה הדגימה","q.q2a":"שתן בוקר (ראשון של היום)","q.q2b":"במהלך היום","q.q2c":"בערב",
@@ -1065,7 +1070,7 @@ en: {
   "guide.do":"Clear cup\nWhite background\nDaylight","guide.dont":"Colored cup\nDark background\nFlash",
   "guide.tip":"Not sure? Retake. No limits.","guide.cta":"Open camera",
   "guide.video":"Watch demo video (15 seconds)","guide.demo1":"Place the cup on a white surface","guide.demo2":"Point the camera straight down","guide.demo3":"And tap the button",
-  "cam.label":"Center the\ncup here","cam.good":"Looking good. Tap when ready",
+  "cam.label":"Center the\ncup here","cam.good":"Tap — 5 second video recording",
   "q.title":"Quick questionnaire","q.sub":"Helps improve accuracy. You can skip.",
   "q.q1":"When was your last period","q.q1a":"In the past week","q.q1b":"1-2 weeks ago","q.q1c":"2-4 weeks ago","q.q1d":"Over a month ago","q.q1e":"Don't remember",
   "q.q2":"When was the sample taken","q.q2a":"Morning urine (first of the day)","q.q2b":"During the day","q.q2c":"In the evening",
@@ -1230,19 +1235,59 @@ function stopCamera() {
 const API_BASE = ''; // Same origin — works on Vercel and localhost
 let pendingFile = null;
 
+let mediaRecorder = null;
+let recordingChunks = [];
+let isRecording = false;
+
 function capturePhoto() {
-  // Capture frame from live camera video
+  // Record 5-second video clip for best accuracy (video model AUC=0.825)
   const video = document.getElementById('cam-video');
-  if (video && video.videoWidth > 0) {
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext('2d').drawImage(video, 0, 0);
-    canvas.toBlob(function(blob) {
-      pendingFile = new File([blob], 'capture.jpg', {type: 'image/jpeg'});
+  if (video && video.videoWidth > 0 && cameraStream) {
+    if (isRecording) return; // Prevent double-click
+    isRecording = true;
+
+    const shutterBtn = document.getElementById('shutter-btn');
+    const feedback = document.querySelector('#screen-camera .cam-feedback');
+    shutterBtn.classList.add('recording');
+    feedback.textContent = lang === 'he' ? 'מצלמת 5 שניות...' : 'Recording 5 seconds...';
+    feedback.style.opacity = '1';
+
+    recordingChunks = [];
+    const mimeType = MediaRecorder.isTypeSupported('video/mp4') ? 'video/mp4'
+                   : MediaRecorder.isTypeSupported('video/webm;codecs=vp8') ? 'video/webm;codecs=vp8'
+                   : 'video/webm';
+    mediaRecorder = new MediaRecorder(cameraStream, { mimeType });
+    mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordingChunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+      const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
+      const blob = new Blob(recordingChunks, { type: mimeType });
+      pendingFile = new File([blob], 'capture.' + ext, { type: mimeType });
+      isRecording = false;
+      shutterBtn.classList.remove('recording');
       stopCamera();
       goTo('screen-questions');
-    }, 'image/jpeg', 0.92);
+    };
+    mediaRecorder.start();
+
+    // Auto-stop after 5 seconds
+    setTimeout(() => {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        // Countdown feedback
+        mediaRecorder.stop();
+      }
+    }, 5000);
+
+    // Countdown
+    let sec = 5;
+    const countInterval = setInterval(() => {
+      sec--;
+      if (sec > 0) {
+        feedback.textContent = (lang === 'he' ? 'מצלמת... ' : 'Recording... ') + sec;
+      } else {
+        clearInterval(countInterval);
+        feedback.textContent = lang === 'he' ? 'מעבד...' : 'Processing...';
+      }
+    }, 1000);
   } else {
     // Camera not available — open native camera via file input with capture
     document.getElementById('file-input').click();
