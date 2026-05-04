@@ -1,0 +1,188 @@
+{
+  "version": "v6",
+  "timestamp": "20260504_171811",
+  "n_subjects": 101,
+  "n_positive": 46,
+  "n_negative": 55,
+  "n_features": 221,
+  "excluded_subjects": [
+    "NEGATIVE_57"
+  ],
+  "hyperparameters": {
+    "n_estimators": 200,
+    "max_depth": 2,
+    "learning_rate": 0.05,
+    "k_best": 90,
+    "n_splits": 5
+  },
+  "cv_results": {
+    "mean_auc": 0.7047,
+    "std_auc": 0.0735,
+    "mean_sensitivity": 0.6867,
+    "mean_specificity": 0.6573,
+    "per_fold_auc": [
+      0.713,
+      0.6465,
+      0.67,
+      0.65,
+      0.8438
+    ],
+    "n_folds": 5
+  },
+  "fold_results": [
+    {
+      "fold": 0,
+      "auc": 0.713,
+      "sensitivity": 0.5556,
+      "specificity": 0.8333,
+      "n_test": 21,
+      "n_test_pos": 9,
+      "n_test_neg": 12,
+      "test_subjects": "NEGATIVE_1,NEGATIVE_12,NEGATIVE_18,NEGATIVE_23,NEGATIVE_28,NEGATIVE_35,NEGATIVE_4,NEGATIVE_44,NEGATIVE_49,NEGATIVE_53,NEGATIVE_6,NEGATIVE_8,POSITIVE_12,POSITIVE_17,POSITIVE_21,POSITIVE_29,POSITIVE_31,POSITIVE_41,POSITIVE_46,POSITIVE_50,POSITIVE_9"
+    },
+    {
+      "fold": 1,
+      "auc": 0.6465,
+      "sensitivity": 0.7778,
+      "specificity": 0.6364,
+      "n_test": 20,
+      "n_test_pos": 9,
+      "n_test_neg": 11,
+      "test_subjects": "NEGATIVE_13,NEGATIVE_19,NEGATIVE_24,NEGATIVE_3,NEGATIVE_34,NEGATIVE_40,NEGATIVE_45,NEGATIVE_46,NEGATIVE_5,NEGATIVE_54,NEGATIVE_9,POSITIVE_13,POSITIVE_18,POSITIVE_22,POSITIVE_28,POSITIVE_32,POSITIVE_42,POSITIVE_47,POSITIVE_51,POSITIVE_8"
+    },
+    {
+      "fold": 2,
+      "auc": 0.67,
+      "sensitivity": 0.7,
+      "specificity": 0.5,
+      "n_test": 20,
+      "n_test_pos": 10,
+      "n_test_neg": 10,
+      "test_subjects": "NEGATIVE_14,NEGATIVE_2,NEGATIVE_25,NEGATIVE_31,NEGATIVE_33,NEGATIVE_37,NEGATIVE_41,NEGATIVE_47,NEGATIVE_50,NEGATIVE_55,POSITIVE_1,POSITIVE_14,POSITIVE_19,POSITIVE_23,POSITIVE_27,POSITIVE_33,POSITIVE_43,POSITIVE_44,POSITIVE_48,POSITIVE_52"
+    },
+    {
+      "fold": 3,
+      "auc": 0.65,
+      "sensitivity": 0.9,
+      "specificity": 0.4,
+      "n_test": 20,
+      "n_test_pos": 10,
+      "n_test_neg": 10,
+      "test_subjects": "NEGATIVE_10,NEGATIVE_16,NEGATIVE_20,NEGATIVE_26,NEGATIVE_32,NEGATIVE_38,NEGATIVE_42,NEGATIVE_51,NEGATIVE_56,NEGATIVE_59,POSITIVE_10,POSITIVE_15,POSITIVE_2,POSITIVE_24,POSITIVE_26,POSITIVE_3,POSITIVE_34,POSITIVE_45,POSITIVE_49,POSITIVE_6"
+    },
+    {
+      "fold": 4,
+      "auc": 0.8438,
+      "sensitivity": 0.5,
+      "specificity": 0.9167,
+      "n_test": 20,
+      "n_test_pos": 8,
+      "n_test_neg": 12,
+      "test_subjects": "NEGATIVE_11,NEGATIVE_17,NEGATIVE_21,NEGATIVE_27,NEGATIVE_36,NEGATIVE_39,NEGATIVE_43,NEGATIVE_48,NEGATIVE_52,NEGATIVE_58,NEGATIVE_60,NEGATIVE_7,POSITIVE_11,POSITIVE_16,POSITIVE_20,POSITIVE_25,POSITIVE_30,POSITIVE_4,POSITIVE_5,POSITIVE_7"
+    }
+  ],
+  "top_features": [
+    {
+      "rank": 1,
+      "feature": "edge_intensity_max",
+      "importance": 0.1865
+    },
+    {
+      "rank": 2,
+      "feature": "t_r_ratio_complexity",
+      "importance": 0.1181
+    },
+    {
+      "rank": 3,
+      "feature": "color_variance_min",
+      "importance": 0.0649
+    },
+    {
+      "rank": 4,
+      "feature": "g_mean_range",
+      "importance": 0.0516
+    },
+    {
+      "rank": 5,
+      "feature": "turbidity_mean",
+      "importance": 0.0511
+    },
+    {
+      "rank": 6,
+      "feature": "lab_L_std",
+      "importance": 0.0425
+    },
+    {
+      "rank": 7,
+      "feature": "hue_spread_min",
+      "importance": 0.0424
+    },
+    {
+      "rank": 8,
+      "feature": "ix_r_mean_std_x_b_mean_std",
+      "importance": 0.0419
+    },
+    {
+      "rank": 9,
+      "feature": "contrast_cv",
+      "importance": 0.0374
+    },
+    {
+      "rank": 10,
+      "feature": "ix_gy_ratio_mean_x_conc_darkness_std",
+      "importance": 0.0338
+    },
+    {
+      "rank": 11,
+      "feature": "b_mean_std",
+      "importance": 0.0306
+    },
+    {
+      "rank": 12,
+      "feature": "layla_r_dominant_std",
+      "importance": 0.0251
+    },
+    {
+      "rank": 13,
+      "feature": "edge_intensity_mean",
+      "importance": 0.0207
+    },
+    {
+      "rank": 14,
+      "feature": "r_mean_std",
+      "importance": 0.0179
+    },
+    {
+      "rank": 15,
+      "feature": "hue_spread_cv",
+      "importance": 0.0163
+    },
+    {
+      "rank": 16,
+      "feature": "t_texture_std",
+      "importance": 0.0153
+    },
+    {
+      "rank": 17,
+      "feature": "t_hue_mean",
+      "importance": 0.0146
+    },
+    {
+      "rank": 18,
+      "feature": "t_activity_trend",
+      "importance": 0.0119
+    },
+    {
+      "rank": 19,
+      "feature": "edge_intensity_cv",
+      "importance": 0.0116
+    },
+    {
+      "rank": 20,
+      "feature": "color_variance_std",
+      "importance": 0.0115
+    }
+  ],
+  "model_path": "/Users/admin/QR PROJECT/models/model_production_v6.pkl",
+  "disclaimer": "Research use only. Experimental probability model. Not a diagnostic test."
+}

@@ -132,8 +132,41 @@
 
 ---
 
-## PIPELINE STATUS
-- **features_v2.csv**: 856 rows, 37 columns, 61 subjects (35P + 26N)
-- **video_features.csv**: 53 subjects with video
-- **Latest models**: `models/model_*_20260430_012513.pkl`
-- **Production model**: `models/model_production_v2.pkl` (Video, AUC=0.825)
+## PIPELINE STATUS (Updated May 3, 2026)
+- **index.csv**: 1,227 rows, 102 subjects (46P + 56N), 447 photos + 780 video frames
+- **features_v2.csv**: 1,227 rows, 37 columns, 102 subjects (46P + 56N)
+- **video_features.csv**: 68 subjects with video (36P + 32N), 44 columns
+- **Latest models**: `models/model_*_20260503_154502.pkl`
+- **Production model**: `models/model_production_v2.pkl` (Photo_V2 LogisticRegression, AUC=0.749)
+- **Backups**: `features_v2_backup_20260503.csv`, `features_backup_20260503.csv`
+
+### Model Performance History
+
+| Date | Subjects | Best Model | AUC | Sensitivity | Specificity |
+|------|----------|-----------|-----|-------------|-------------|
+| Apr 30 | 61 (35P+26N) | Video RF | 0.825 | 0.865 | 0.480 |
+| May 3 | 102 (46P+56N) | Photo LR | 0.749 | 0.651 | 0.707 |
+
+Note: AUC dropped but specificity improved significantly (0.42->0.71 for Photo). The earlier model was over-fitted on 61 subjects with high sensitivity but poor specificity (many false positives). The May 3 model is more balanced and realistic. Advanced training (feature engineering, ensembles, hyperparameter tuning) is the next step to push AUC higher while maintaining balance.
+
+### May 3, 2026 - Full Results
+
+**Photo_V2 (LogisticRegression)**: AUC=0.749, sens=0.651, spec=0.707
+**Video (LogisticRegression)**: AUC=0.743, sens=0.690, spec=0.633
+**Combined (RandomForest)**: AUC=0.690, sens=0.781, spec=0.553
+
+### New Subjects Added May 3
+
+**POSITIVE P42-P52 (11 subjects)**:
+- P42: golden yellow, MOD-HIGH, 19wk, age 19, folic acid + Calavin, Vivo
+- P43: light golden, LOW-MOD, 9wk, age 20, Vit B + folic, Infinix
+- P44: golden amber, MOD-HIGH/HIGH, 2mo, age 20, **antibiotics** (confounder), Samsung
+- P45: golden amber, MOD/MOD-HIGH, 13wk, age 32, **progesterone/Utrogestan** (confounder), folic
+- P46-P52: survey metadata pending extraction (images in folders, pipeline features extracted)
+
+**NEGATIVE N31-N60 (30 subjects)**:
+- All pipeline features extracted numerically
+- Survey metadata pending extraction from form images
+
+### What Needs Survey Extraction
+Folders P46-P52 and N31-N60 have pipeline-extracted numerical features but survey form metadata (gestational age, medications, health, etc.) has not been read from the form images yet. This is a Claude Code visual task - read ONLY the survey form image from each folder.

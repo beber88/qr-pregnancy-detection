@@ -6,7 +6,28 @@
       "Bash(open \"http://localhost:8765/prototype.html\")",
       "Bash(node -e ':*)",
       "Bash(open \"http://localhost:8765/test-demo.html\")",
-      "Bash(find \"/Users/admin/QR PROJECT\" -maxdepth 1 -name \"*מחקר*\" -exec ls -la {} +)"
+      "Bash(find \"/Users/admin/QR PROJECT\" -maxdepth 1 -name \"*מחקר*\" -exec ls -la {} +)",
+      "Bash(grep -l \"camera\\\\|capture\\\\|focus\\\\|photo\\\\|image\\\\|protocol\" \"/Users/admin/QR PROJECT/מחקרים\"/*)",
+      "Bash(python -c ':*)",
+      "Bash(python3 -c ':*)",
+      "Bash(python3 run_pipeline_v2.py)",
+      "Bash(cat package.json)",
+      "Bash(kill 93645)",
+      "Bash(python3 -c \" import uvicorn import sys, os sys.path.insert\\(0, os.path.dirname\\(os.path.abspath\\('.'\\)\\)\\) \")",
+      "Bash(python3 api_v2.py)",
+      "Bash(echo \"PID: $!\" sleep 3 curl -s http://localhost:8000/health)",
+      "Bash(awk '{print $2}')",
+      "Bash(rm -f model_*_124251.pkl model_*_124623.pkl)",
+      "Bash(ls -la *.pkl)",
+      "WebFetch(domain:qr-pregnancy-detection-hzt2tf5oe-beber88s-projects.vercel.app)",
+      "Bash(curl -s -X POST \"https://qr-pregnancy-detection.vercel.app/api/predict\" -F \"file=@/Users/admin/QR PROJECT/PICTURES - VIDEO/POSITIVE/24/PHOTO-2026-04-23-20-47-13.jpg\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f'POSITIVE/24: prob={d[\\\\\"probability\\\\\"]} | status={d[\\\\\"status\\\\\"]} | model={d[\\\\\"model_tier\\\\\"]}'\\)\")",
+      "Bash(curl -s -X POST \"https://qr-pregnancy-detection.vercel.app/api/predict\" -F \"file=@/Users/admin/QR PROJECT/PICTURES - VIDEO/NEGATIVE/11/PHOTO-2026-04-22-13-23-10.jpg\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f'NEGATIVE/11: prob={d[\\\\\"probability\\\\\"]} | status={d[\\\\\"status\\\\\"]} | model={d[\\\\\"model_tier\\\\\"]}'\\)\")",
+      "Bash(awk '{print $NF}')",
+      "Bash(grep -E \"^d.*[6-9]$|^d.*10$\")",
+      "Bash(python run_pipeline_v2.py)",
+      "Bash(ls -la \"/Users/admin/QR PROJECT/models/\"*.json)"
     ]
   }
 }
